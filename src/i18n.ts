@@ -1,0 +1,84 @@
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+
+const resources = {
+  en: {
+    translation: {
+      appName: 'DevLens',
+      network: 'Network',
+      console: 'Console',
+      generateMockData: 'Generate Mock Data',
+      filterByUrl: 'Filter by URL...',
+      all: 'All',
+      general: 'General',
+      headers: 'Headers',
+      response: 'Response',
+      requestHeaders: 'Request Headers',
+      responseHeaders: 'Response Headers',
+      requestUrl: 'Request URL',
+      requestMethod: 'Request Method',
+      statusCode: 'Status Code',
+      type: 'Type',
+      noRequests: 'No requests match the current filter.',
+      waitingForLogs: 'Waiting for console logs...',
+      noLogsMatch: 'No logs match the current filter.',
+      filterByMessage: 'Filter by message...',
+      theme: 'Theme',
+      light: 'Light',
+      dark: 'Dark',
+      language: 'Language',
+      clear: 'Clear',
+      clearAll: 'Clear All',
+      showMore: 'Show More',
+      showLess: 'Show Less',
+      moreLines: 'more lines',
+      copy: 'Copy',
+    },
+  },
+  zh: {
+    translation: {
+      appName: 'DevLens',
+      network: '网络',
+      console: '控制台',
+      generateMockData: '生成模拟数据',
+      filterByUrl: '按 URL 过滤...',
+      all: '全部',
+      general: '概览',
+      headers: '请求头',
+      response: '响应',
+      requestHeaders: '请求头',
+      responseHeaders: '响应头',
+      requestUrl: '请求 URL',
+      requestMethod: '请求方法',
+      statusCode: '状态码',
+      type: '类型',
+      noRequests: '没有匹配当前过滤条件的请求。',
+      waitingForLogs: '等待控制台日志...',
+      noLogsMatch: '没有匹配当前过滤条件的日志。',
+      filterByMessage: '按消息过滤...',
+      theme: '主题',
+      light: '浅色',
+      dark: '深色',
+      language: '语言',
+      clear: '清空',
+      clearAll: '清空全部',
+      showMore: '展开',
+      showLess: '收起',
+      moreLines: '行',
+      copy: '复制',
+    },
+  },
+};
+
+i18n
+  .use(initReactI18next)
+  .init({
+    resources,
+    lng: 'en',
+    fallbackLng: 'en',
+    interpolation: {
+      escapeValue: false,
+    },
+  });
+
+export default i18n;

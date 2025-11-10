@@ -1,0 +1,21 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+/* 去掉所有 focus 边框 */
+* {
+  outline: none !important;
+}
+
+*:focus,
+*:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+button:focus,
+input:focus,
+a:focus,
+.tab:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
