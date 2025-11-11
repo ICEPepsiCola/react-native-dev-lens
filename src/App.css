@@ -1,6 +1,83 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
+/* 自定义颜色变量 */
+@theme {
+  /* 成功色 */
+  --color-success: #10b981;
+  
+  /* 错误色 */
+  --color-error: #ef4444;
+  
+  /* 警告色 */
+  --color-warning: #f59e0b;
+  
+  /* 信息色 */
+  --color-info: #3b82f6;
+}
+
+/* Toast 样式 - 使用 Tailwind 的方式 */
+.toast-success {
+  @apply bg-white dark:bg-gray-800 text-success border border-success;
+}
+
+.toast-error {
+  @apply bg-white dark:bg-gray-800 text-error border border-error;
+}
+
+.toast-warning {
+  @apply bg-white dark:bg-gray-800 text-warning border border-warning;
+}
+
+.toast-info {
+  @apply bg-white dark:bg-gray-800 text-info border border-info;
+}
+
+/* 日志级别背景色 */
+.log-error-bg {
+  @apply bg-red-50 dark:bg-red-950/20;
+}
+
+.log-warn-bg {
+  @apply bg-yellow-50 dark:bg-yellow-950/20;
+}
+
+.log-info-bg {
+  @apply bg-blue-50 dark:bg-blue-950/20;
+}
+
+/* 状态徽章颜色 */
+.status-success {
+  @apply text-success border-success;
+}
+
+.status-error {
+  @apply text-error border-error;
+}
+
+.status-warning {
+  @apply text-warning border-warning;
+}
+
+.status-info {
+  @apply text-info border-info;
+}
+
+/* 悬停效果 */
+.hover-bg {
+  @apply hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100;
+}
+
+/* 卡片样式 */
+.card-bg {
+  @apply bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700;
+}
+
+/* 输入框样式 */
+.input-bg {
+  @apply bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600;
+}
+
 /* 去掉所有 focus 边框 */
 * {
   outline: none !important;

@@ -44,10 +44,12 @@ devLens.init();
 - Uses React Native's official `XHRInterceptor` from `react-native/Libraries/Network/XHRInterceptor`
 - Automatically detects React Native environment
 - Captures all network requests (fetch, XMLHttpRequest, etc.)
+- Intercepts WebSocket connections (connect, send, receive, close, error)
 - Intercepts console logs (log, warn, error, info)
 
 ### Web
 - Uses fetch interceptor for web environments
+- Intercepts WebSocket connections
 - Captures console logs
 
 ## API

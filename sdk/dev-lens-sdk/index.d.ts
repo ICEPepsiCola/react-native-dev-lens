@@ -27,6 +27,7 @@ export default class DevLens {
   sendNetworkLog(request: NetworkRequest): Promise<void>;
   sendConsoleLog(log: ConsoleLog): Promise<void>;
   interceptNetwork(): void;
+  interceptWebSocket(): void;
   interceptConsole(): void;
   init(): void;
 }
