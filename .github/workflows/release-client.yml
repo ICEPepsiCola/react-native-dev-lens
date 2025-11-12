@@ -1,38 +1,15 @@
-name: Release
+name: Release Client
 
 on:
   push:
     tags:
-      - 'v*'
+      - 'client-v*'
+      - 'patch-*'
+      - 'minor-*'
+      - 'major-*'
 
 jobs:
-  # 发布 SDK 到 NPM
-  publish-sdk:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 8
-      
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          registry-url: 'https://registry.npmjs.org'
-      
-      - name: Install dependencies
-        run: pnpm install
-      
-      - name: Publish SDK to NPM
-        working-directory: packages/sdk
-        run: pnpm publish --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-  # 构建并发布客户端
-  build-client:
-    needs: publish-sdk
+  build:
     strategy:
       fail-fast: false
       matrix:
@@ -72,9 +49,8 @@ jobs:
           path: |
             src-tauri/target/release/bundle/**/*
   
-  # 创建 GitHub Release
-  create-release:
-    needs: build-client
+  release:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

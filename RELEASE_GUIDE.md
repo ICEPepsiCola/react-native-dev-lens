@@ -104,10 +104,6 @@ git push origin v1.0.0
 ```bash
 # 登录 NPM
 npm login
-
-# 创建组织（首次）
-# 访问 https://www.npmjs.com/org/create
-# 创建组织：@react-native-dev-lens
 ```
 
 ### GitHub Token
@@ -166,7 +162,7 @@ A: 因为客户端和 SDK 是配套使用的，统一版本号可以：
 A: 不建议这样做。如果确实需要，可以手动发布：
 
 ```bash
-cd packages/sdk
+cd sdk
 npm version patch
 npm publish
 ```

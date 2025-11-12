@@ -9,12 +9,10 @@
   </p>
 </div>
 
-## 📦 Monorepo Structure
-
-This project uses **pnpm workspace** to manage multiple packages:
+## 📦 Project Structure
 
 - **Root** - Tauri desktop application
-- **packages/sdk** - React Native SDK (published to NPM as `dev-lens-sdk`)
+- **sdk/** - React Native SDK (published to NPM as `react-native-dev-lens`)
 
 ## ✨ Features
 
