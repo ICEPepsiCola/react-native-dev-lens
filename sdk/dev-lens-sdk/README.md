@@ -12,12 +12,14 @@ yarn add dev-lens-sdk
 pnpm add dev-lens-sdk
 ```
 
+> **Note:** Make sure you have the Dev Lens desktop app running on your development machine. Download it from [GitHub Releases](https://github.com/yourusername/dev-lens/releases).
+
 ## Quick Start
 
 Add **one line** to your app entry point (e.g., `index.js`):
 
 ```javascript
-import DevLens from 'dev-lens-sdk';
+import DevLens from "dev-lens-sdk";
 
 // That's it! One line to enable monitoring
 new DevLens().init();
@@ -28,10 +30,10 @@ Now open the Dev Lens desktop app and you'll see all network requests and consol
 ## Configuration
 
 ```javascript
-import DevLens from 'dev-lens-sdk';
+import DevLens from "dev-lens-sdk";
 
 const devLens = new DevLens({
-  baseUrl: 'http://127.0.0.1:9527', // Dev Lens server URL
+  baseUrl: "http://127.0.0.1:9527", // Dev Lens server URL
   enabled: __DEV__, // Only enable in development mode
 });
 
@@ -41,6 +43,7 @@ devLens.init();
 ## How It Works
 
 ### React Native
+
 - Uses React Native's official `XHRInterceptor` from `react-native/Libraries/Network/XHRInterceptor`
 - Automatically detects React Native environment
 - Captures all network requests (fetch, XMLHttpRequest, etc.)
@@ -48,6 +51,7 @@ devLens.init();
 - Intercepts console logs (log, warn, error, info)
 
 ### Web
+
 - Uses fetch interceptor for web environments
 - Intercepts WebSocket connections
 - Captures console logs
@@ -59,6 +63,7 @@ devLens.init();
 Create a new Dev Lens instance.
 
 **Options:**
+
 - `baseUrl` (string): Dev Lens server URL. Default: `http://127.0.0.1:9527`
 - `enabled` (boolean): Enable/disable monitoring. Default: `true`
 
@@ -78,10 +83,10 @@ Manually send a console log (advanced usage).
 
 ```javascript
 // index.js
-import { AppRegistry } from 'react-native';
-import App from './App';
-import { name as appName } from './app.json';
-import DevLens from 'dev-lens-sdk';
+import { AppRegistry } from "react-native";
+import App from "./App";
+import { name as appName } from "./app.json";
+import DevLens from "dev-lens-sdk";
 
 // Enable Dev Lens in development mode
 if (__DEV__) {
@@ -104,7 +109,7 @@ AppRegistry.registerComponent(appName, () => App);
 2. Check that your device/emulator can reach `http://127.0.0.1:9527`
 3. For physical devices, use your computer's IP address:
    ```javascript
-   new DevLens({ baseUrl: 'http://192.168.1.100:9527' }).init();
+   new DevLens({ baseUrl: "http://192.168.1.100:9527" }).init();
    ```
 
 ### Console logs not appearing?

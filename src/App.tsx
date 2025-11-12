@@ -5,16 +5,8 @@ import { Toaster } from 'react-hot-toast'
 import { Emoji } from './components/Emoji'
 import { NetworkPage } from './pages/NetworkPage'
 import { ConsolePage } from './pages/ConsolePage'
-import type { NetworkRequest, ConsoleLog, WebSocketMessage } from './types'
+import type { NetworkRequest, ConsoleLog, WebSocketUpdate } from './types'
 
-interface WebSocketUpdate {
-  state?: 'connecting' | 'open' | 'closing' | 'closed' | 'error'
-  status?: number
-  response_time?: number
-  message?: WebSocketMessage
-  error?: string
-  close_reason?: string
-}
 import './App.css'
 
 function App() {

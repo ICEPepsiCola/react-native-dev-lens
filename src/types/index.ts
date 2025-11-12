@@ -32,3 +32,13 @@ export interface ConsoleLog {
 export type DetailTab = 'General' | 'Headers' | 'Response'
 export type FilterType = 'All' | RequestType
 export type LogLevelFilter = 'all' | 'info' | 'warn' | 'error'
+
+
+export interface WebSocketUpdate {
+  state?: 'connecting' | 'open' | 'closing' | 'closed' | 'error'
+  status?: number
+  response_time?: number
+  message?: WebSocketMessage
+  error?: string
+  close_reason?: string
+}

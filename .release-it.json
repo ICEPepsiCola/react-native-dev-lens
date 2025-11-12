@@ -1,19 +1,24 @@
 {
   "git": {
-    "commitMessage": "chore: release v${version}",
-    "tagName": "v${version}",
+    "commitMessage": "chore: release client v${version}",
+    "tagName": "client-v${version}",
     "requireCleanWorkingDir": false,
     "requireBranch": "main"
   },
   "github": {
     "release": true,
-    "releaseName": "v${version}"
+    "releaseName": "Client v${version}",
+    "assets": [
+      "src-tauri/target/release/bundle/**/*"
+    ]
   },
   "npm": {
     "publish": false
   },
   "hooks": {
-    "before:init": ["pnpm test || true"],
+    "before:init": [
+      "pnpm lint"
+    ],
     "after:bump": "pnpm tauri build"
   },
   "plugins": {

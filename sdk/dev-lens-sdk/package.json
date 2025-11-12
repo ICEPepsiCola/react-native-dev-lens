@@ -32,5 +32,10 @@
     "index.js",
     "index.d.ts",
     "README.md"
-  ]
+  ],
+  "scripts": {
+    "release": "release-it",
+    "release:minor": "release-it minor",
+    "release:major": "release-it major"
+  }
 }

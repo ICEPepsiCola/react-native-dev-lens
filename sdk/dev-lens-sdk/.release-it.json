@@ -1,0 +1,31 @@
+{
+    "git": {
+        "commitMessage": "chore: release sdk v${version}",
+        "tagName": "sdk-v${version}",
+        "requireCleanWorkingDir": false,
+        "requireBranch": "main",
+        "commit": true,
+        "tag": true,
+        "push": true
+    },
+    "github": {
+        "release": true,
+        "releaseName": "SDK v${version}"
+    },
+    "npm": {
+        "publish": true
+    },
+    "hooks": {
+        "before:init": [
+            "cd ../.. && pnpm lint"
+        ]
+    },
+    "plugins": {
+        "@release-it/conventional-changelog": {
+            "preset": {
+                "name": "conventionalcommits"
+            },
+            "infile": "CHANGELOG.md"
+        }
+    }
+}
