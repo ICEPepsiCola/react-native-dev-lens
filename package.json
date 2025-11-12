@@ -1,6 +1,6 @@
 {
-  "name": "dev-lens",
-  "private": false,
+  "name": "react-native-dev-lens",
+  "private": true,
   "version": "0.1.0",
   "type": "module",
   "scripts": {
@@ -13,9 +13,9 @@
     "release:client": "release-it",
     "release:client:minor": "release-it minor",
     "release:client:major": "release-it major",
-    "release:sdk": "pnpm --filter dev-lens-sdk release",
-    "release:sdk:minor": "pnpm --filter dev-lens-sdk release:minor",
-    "release:sdk:major": "pnpm --filter dev-lens-sdk release:major"
+    "release:sdk": "pnpm --filter @react-native-dev-lens/sdk release",
+    "release:sdk:minor": "pnpm --filter @react-native-dev-lens/sdk release:minor",
+    "release:sdk:major": "pnpm --filter @react-native-dev-lens/sdk release:major"
   },
   "dependencies": {
     "@emoji-mart/data": "^1.2.1",

@@ -5,11 +5,11 @@ SDK for integrating Dev Lens network and console monitoring into your React Nati
 ## Installation
 
 ```bash
-npm install dev-lens-sdk
+npm install @react-native-dev-lens/sdk
 # or
-yarn add dev-lens-sdk
+yarn add @react-native-dev-lens/sdk
 # or
-pnpm add dev-lens-sdk
+pnpm add @react-native-dev-lens/sdk
 ```
 
 > **Note:** Make sure you have the Dev Lens desktop app running on your development machine. Download it from [GitHub Releases](https://github.com/yourusername/dev-lens/releases).
@@ -19,7 +19,7 @@ pnpm add dev-lens-sdk
 Add **one line** to your app entry point (e.g., `index.js`):
 
 ```javascript
-import DevLens from "dev-lens-sdk";
+import DevLens from "@react-native-dev-lens/sdk";
 
 // That's it! One line to enable monitoring
 new DevLens().init();
@@ -30,7 +30,7 @@ Now open the Dev Lens desktop app and you'll see all network requests and consol
 ## Configuration
 
 ```javascript
-import DevLens from "dev-lens-sdk";
+import DevLens from "@react-native-dev-lens/sdk";
 
 const devLens = new DevLens({
   baseUrl: "http://127.0.0.1:9527", // Dev Lens server URL
@@ -86,7 +86,7 @@ Manually send a console log (advanced usage).
 import { AppRegistry } from "react-native";
 import App from "./App";
 import { name as appName } from "./app.json";
-import DevLens from "dev-lens-sdk";
+import DevLens from "@react-native-dev-lens/sdk";
 
 // Enable Dev Lens in development mode
 if (__DEV__) {

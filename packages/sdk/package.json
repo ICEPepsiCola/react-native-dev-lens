@@ -1,6 +1,6 @@
 {
-  "name": "dev-lens-sdk",
-  "version": "0.1.0",
+  "name": "@react-native-dev-lens/sdk",
+  "version": "0.0.0",
   "description": "SDK for Dev Lens - Network and Console monitoring tool for React Native",
   "main": "index.js",
   "types": "index.d.ts",
@@ -37,5 +37,8 @@
     "release": "release-it",
     "release:minor": "release-it minor",
     "release:major": "release-it major"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
