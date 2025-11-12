@@ -42,7 +42,10 @@ jobs:
           elif [[ $TAG_NAME == major-* ]]; then
             echo "type=major" >> $GITHUB_OUTPUT
           fi
-      
+
+      - name: Git status
+        run: git status    
+          
       - name: Run release-it
         run: pnpm release-it ${{ steps.version.outputs.type }} --ci
         env:
