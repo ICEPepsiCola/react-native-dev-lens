@@ -5,7 +5,16 @@ import { Toaster } from 'react-hot-toast'
 import { Emoji } from './components/Emoji'
 import { NetworkPage } from './pages/NetworkPage'
 import { ConsolePage } from './pages/ConsolePage'
-import type { NetworkRequest, ConsoleLog } from './types'
+import type { NetworkRequest, ConsoleLog, WebSocketMessage } from './types'
+
+interface WebSocketUpdate {
+  state?: string
+  status?: number
+  response_time?: number
+  message?: WebSocketMessage
+  error?: string
+  close_reason?: string
+}
 import './App.css'
 
 function App() {
@@ -42,7 +51,7 @@ function App() {
       setConsoleLogs(prev => [event.payload, ...prev])
     })
 
-    const unlistenWebSocket = listen<{ ws_id: string; update: any }>('websocket-update', event => {
+    const unlistenWebSocket = listen<{ ws_id: string; update: WebSocketUpdate }>('websocket-update', event => {
       const { ws_id, update } = event.payload
 
       setNetworkRequests(prev => {

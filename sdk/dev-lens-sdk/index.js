@@ -20,7 +20,7 @@ function loadXHRInterceptor() {
     ) {
       return module.default
     }
-  } catch (e) {
+  } catch (_e) {
     // Try next
   }
 
@@ -42,7 +42,7 @@ function loadXHRInterceptor() {
     ) {
       return module.default
     }
-  } catch (e) {
+  } catch (_e) {
     // Try next
   }
 
@@ -64,7 +64,7 @@ function loadXHRInterceptor() {
     ) {
       return module.default
     }
-  } catch (e) {
+  } catch (_e) {
     // All paths failed
   }
 
@@ -98,7 +98,7 @@ class DevLens {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(request),
       })
-    } catch (error) {
+    } catch (_error) {
       // Silently fail to avoid infinite loops
     }
   }
@@ -112,7 +112,7 @@ class DevLens {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(log),
       })
-    } catch (error) {
+    } catch (_error) {
       // Silently fail
     }
   }
@@ -161,7 +161,7 @@ class DevLens {
           } else if (response) {
             responseBody = JSON.stringify(response, null, 2)
           }
-        } catch (e) {
+        } catch (_e) {
           responseBody = String(response)
         }
 
@@ -181,7 +181,7 @@ class DevLens {
       })
 
       XHRInterceptor.enableInterception()
-    } catch (error) {
+    } catch (_error) {
       console.warn('Dev Lens: Failed to setup network interceptor', error)
     }
   }
@@ -195,7 +195,7 @@ class DevLens {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(update),
       })
-    } catch (error) {
+    } catch (_error) {
       // Silently fail
     }
   }
@@ -313,7 +313,7 @@ class DevLens {
           if (typeof arg === 'object') {
             try {
               return JSON.stringify(arg, null, 2)
-            } catch (e) {
+            } catch (_e) {
               return String(arg)
             }
           }

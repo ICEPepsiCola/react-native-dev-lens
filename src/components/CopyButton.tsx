@@ -32,7 +32,7 @@ export function CopyButton({
           position: 'top-center',
           className: 'toast-success',
         })
-      } catch (error) {
+      } catch (_error) {
         toast.error(t('copyFailed'), {
           duration: 2000,
           position: 'top-center',
