@@ -22,6 +22,7 @@
       "pnpm lint"
     ],
     "after:bump": [
+      "node scripts/sync-tauri-version.js",
       "pnpm build",
       "pnpm tauri build"
     ]
