@@ -8,7 +8,7 @@ import { ConsolePage } from './pages/ConsolePage'
 import type { NetworkRequest, ConsoleLog, WebSocketMessage } from './types'
 
 interface WebSocketUpdate {
-  state?: string
+  state?: 'connecting' | 'open' | 'closing' | 'closed' | 'error'
   status?: number
   response_time?: number
   message?: WebSocketMessage
