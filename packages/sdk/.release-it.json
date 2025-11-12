@@ -17,7 +17,7 @@
     },
     "hooks": {
         "before:init": [
-            "cd ../.. && pnpm lint"
+            "pnpm -w lint"
         ]
     },
     "plugins": {

@@ -13,9 +13,9 @@
     "release:client": "release-it",
     "release:client:minor": "release-it minor",
     "release:client:major": "release-it major",
-    "release:sdk": "cd sdk/dev-lens-sdk && pnpm release",
-    "release:sdk:minor": "cd sdk/dev-lens-sdk && pnpm release:minor",
-    "release:sdk:major": "cd sdk/dev-lens-sdk && pnpm release:major"
+    "release:sdk": "pnpm --filter dev-lens-sdk release",
+    "release:sdk:minor": "pnpm --filter dev-lens-sdk release:minor",
+    "release:sdk:major": "pnpm --filter dev-lens-sdk release:major"
   },
   "dependencies": {
     "@emoji-mart/data": "^1.2.1",

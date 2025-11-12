@@ -9,10 +9,17 @@
   </p>
 </div>
 
+## 📦 Monorepo Structure
+
+This project uses **pnpm workspace** to manage multiple packages:
+
+- **Root** - Tauri desktop application
+- **packages/sdk** - React Native SDK (published to NPM as `dev-lens-sdk`)
+
 ## ✨ Features
 
-- � **国Network Monitoring** - Real-time capture of HTTP requests and WebSocket connections
-- � ***Detailed Information** - View request/response headers, body, CORS status, etc.
+- � **国 Network Monitoring** - Real-time capture of HTTP requests and WebSocket connections
+- � **\*Detailed Information** - View request/response headers, body, CORS status, etc.
 - 🎨 **Theme Switching** - Support for dark/light mode with modern UI
 - 🌍 **Internationalization** - English/Chinese language support
 - � **Smart Filtering** - Filter by URL and request type
@@ -23,7 +30,7 @@
 ### For Users (React Native Developers)
 
 1. **Download Dev Lens App**
-   
+
    Download the latest release from [GitHub Releases](https://github.com/yourusername/dev-lens/releases)
 
 2. **Install SDK in your React Native project**
@@ -39,25 +46,25 @@
 3. **Add one line to your app entry point** (e.g., `index.js` or `App.js`)
 
    ```javascript
-   import DevLens from 'dev-lens-sdk';
-   
+   import DevLens from "dev-lens-sdk";
+
    // That's it! One line to enable monitoring
    new DevLens().init();
    ```
 
 4. **Open Dev Lens App**
-   
+
    Launch the Dev Lens desktop app, and you'll see all network requests and console logs in real-time!
 
 ### Configuration (Optional)
 
 ```javascript
-import DevLens from 'dev-lens-sdk';
+import DevLens from "dev-lens-sdk";
 
 // Only enable in development mode
 if (__DEV__) {
   new DevLens({
-    baseUrl: 'http://127.0.0.1:9527', // Dev Lens server URL
+    baseUrl: "http://127.0.0.1:9527", // Dev Lens server URL
   }).init();
 }
 

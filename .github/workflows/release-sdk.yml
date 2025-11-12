@@ -24,7 +24,7 @@ jobs:
         run: pnpm install
       
       - name: Publish to NPM
-        working-directory: sdk/dev-lens-sdk
+        working-directory: packages/sdk
         run: pnpm publish --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

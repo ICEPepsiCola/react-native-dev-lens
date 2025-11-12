@@ -12,8 +12,8 @@ dev-lens/
 ├── src-tauri/             # Tauri 后端（Rust）
 │   └── src/
 │       └── lib.rs         # HTTP 服务器和事件处理
-├── sdk/                   # React Native SDK
-│   └── dev-lens-sdk/
+├── packages/              # Monorepo packages
+│   └── sdk/               # React Native SDK
 │       ├── index.js       # SDK 主文件
 │       ├── index.d.ts     # TypeScript 类型定义
 │       └── README.md      # SDK 文档
@@ -157,9 +157,15 @@ dev-lens/
 # 启动桌面客户端
 pnpm tauri dev
 
-# 在 React Native 项目中测试 SDK
+# 在 React Native 项目中测试 SDK（使用 workspace）
 cd your-rn-project
-npm install ../dev-lens/sdk/dev-lens-sdk
+npm install ../dev-lens/packages/sdk
+
+# 或者使用 pnpm link
+cd dev-lens/packages/sdk
+pnpm link --global
+cd your-rn-project
+pnpm link --global dev-lens-sdk
 ```
 
 ### 代码规范

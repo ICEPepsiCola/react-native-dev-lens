@@ -3,7 +3,7 @@ import tseslint from 'typescript-eslint'
 
 export default tseslint.config(
   {
-    ignores: ['dist', 'node_modules', 'src-tauri/target', '*.config.js', '*.config.ts'],
+    ignores: ['dist', 'node_modules', 'src-tauri/target', '*.config.js', '*.config.ts', 'packages/*/dist'],
   },
   ...tseslint.configs.recommended,
   {
