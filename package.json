@@ -10,12 +10,9 @@
     "tauri": "tauri",
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
     "lint:fix": "eslint . --ext .ts,.tsx,.js,.jsx --fix",
-    "release:client": "release-it",
-    "release:client:minor": "release-it minor",
-    "release:client:major": "release-it major",
-    "release:sdk": "cd sdk && release-it",
-    "release:sdk:minor": "cd sdk && release-it minor",
-    "release:sdk:major": "cd sdk && release-it major"
+    "release": "release-it",
+    "release:minor": "release-it minor",
+    "release:major": "release-it major"
   },
   "dependencies": {
     "@emoji-mart/data": "^1.2.1",
