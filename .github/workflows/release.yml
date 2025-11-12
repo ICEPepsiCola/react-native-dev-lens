@@ -18,11 +18,11 @@ jobs:
       
       - uses: pnpm/action-setup@v2
         with:
-          version: 8
+          version: 10.x
       
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22.x'
           registry-url: 'https://registry.npmjs.org'
       
       - name: Install Rust stable
@@ -45,7 +45,7 @@ jobs:
 
       - name: Git status
         run: git status    
-          
+
       - name: Run release-it
         run: pnpm release-it ${{ steps.version.outputs.type }} --ci
         env:
