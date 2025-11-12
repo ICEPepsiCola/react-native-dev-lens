@@ -3,14 +3,18 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'
+      - 'patch-*'
+      - 'minor-*'
+      - 'major-*'
 
 jobs:
-  # 发布 SDK 到 NPM
-  publish-sdk:
-    runs-on: ubuntu-latest
+  release:
+    runs-on: macos-latest
+    
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       
       - uses: pnpm/action-setup@v2
         with:
@@ -21,74 +25,26 @@ jobs:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
       
-      - name: Install dependencies
-        run: pnpm install
-      
-      - name: Publish SDK to NPM
-        working-directory: sdk
-        run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-  # 构建客户端
-  build-client:
-    strategy:
-      fail-fast: false
-      matrix:
-        platform: [macos-latest, ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.platform }}
-    
-    steps:
-      - uses: actions/checkout@v4
-      
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 8
-      
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
       
-      - name: Install dependencies (ubuntu only)
-        if: matrix.platform == 'ubuntu-latest'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
-      
-      - name: Install frontend dependencies
+      - name: Install dependencies
         run: pnpm install
       
-      - name: Build Tauri app
-        run: pnpm tauri build
+      - name: Determine version type
+        id: version
+        run: |
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+          if [[ $TAG_NAME == patch-* ]]; then
+            echo "type=patch" >> $GITHUB_OUTPUT
+          elif [[ $TAG_NAME == minor-* ]]; then
+            echo "type=minor" >> $GITHUB_OUTPUT
+          elif [[ $TAG_NAME == major-* ]]; then
+            echo "type=major" >> $GITHUB_OUTPUT
+          fi
       
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.platform }}-build
-          path: |
-            src-tauri/target/release/bundle/**/*
-  
-  # 创建 GitHub Release
-  create-release:
-    needs: [publish-sdk, build-client]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-      
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: |
-            **/*.dmg
-            **/*.exe
-            **/*.AppImage
-            **/*.deb
-          generate_release_notes: true
+      - name: Run release-it
+        run: pnpm release-it ${{ steps.version.outputs.type }} --ci
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

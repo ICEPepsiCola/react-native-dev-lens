@@ -1,8 +1,41 @@
 {
   "name": "react-native-dev-lens",
-  "private": true,
-  "version": "0.1.0",
+  "version": "0.0.0",
+  "description": "Network and Console monitoring tool for React Native - Desktop App & SDK",
   "type": "module",
+  "main": "sdk/index.js",
+  "types": "sdk/index.d.ts",
+  "keywords": [
+    "react-native",
+    "debugging",
+    "network",
+    "console",
+    "monitoring",
+    "dev-tools",
+    "developer-tools",
+    "network-inspector"
+  ],
+  "author": "Dev Lens Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/dev-lens.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/dev-lens/issues"
+  },
+  "homepage": "https://github.com/yourusername/dev-lens#readme",
+  "files": [
+    "sdk/index.js",
+    "sdk/index.d.ts",
+    "sdk/README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "react-native": ">=0.60.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
@@ -10,9 +43,7 @@
     "tauri": "tauri",
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
     "lint:fix": "eslint . --ext .ts,.tsx,.js,.jsx --fix",
-    "release": "release-it",
-    "release:minor": "release-it minor",
-    "release:major": "release-it major"
+    "release-it": "release-it"
   },
   "dependencies": {
     "@emoji-mart/data": "^1.2.1",
