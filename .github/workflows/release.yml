@@ -31,6 +31,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       
+      - name: Checkout main branch
+        run: git checkout main
+      
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+      
       - name: Determine version type
         id: version
         run: |
@@ -41,10 +49,7 @@ jobs:
             echo "type=minor" >> $GITHUB_OUTPUT
           elif [[ $TAG_NAME == major-* ]]; then
             echo "type=major" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Git status
-        run: git status    
+          fi    
 
       - name: Run release-it
         run: pnpm release-it ${{ steps.version.outputs.type }} --ci
