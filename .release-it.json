@@ -1,16 +1,14 @@
 {
   "git": {
-    "commitMessage": "chore: release client v${version}",
-    "tagName": "client-v${version}",
+    "commitMessage": "chore: release v${version}",
+    "tagName": "v${version}",
     "requireCleanWorkingDir": false,
     "requireBranch": "main"
   },
   "github": {
     "release": true,
-    "releaseName": "Client v${version}",
-    "assets": [
-      "src-tauri/target/release/bundle/**/*"
-    ]
+    "releaseName": "v${version}",
+    "releaseNotes": "echo 'Release includes both Desktop App and SDK'"
   },
   "npm": {
     "publish": false
@@ -19,7 +17,13 @@
     "before:init": [
       "pnpm lint"
     ],
-    "after:bump": "pnpm tauri build"
+    "after:bump": [
+      "pnpm sync-version",
+      "pnpm tauri build"
+    ],
+    "after:release": [
+      "cd packages/sdk && pnpm publish --no-git-checks"
+    ]
   },
   "plugins": {
     "@release-it/conventional-changelog": {

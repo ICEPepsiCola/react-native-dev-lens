@@ -1,25 +1,16 @@
 # 发布指南
 
-Dev Lens 项目包含两个独立的发布产物：
+Dev Lens 使用**统一版本号**，一次发布同时包含桌面客户端和 SDK。
 
-1. **客户端（Desktop App）** - Tauri 桌面应用
-2. **SDK（NPM Package）** - React Native SDK
+## 📦 统一版本策略
 
-## 前置要求
+- 客户端和 SDK 使用**相同的版本号**
+- 一次发布命令同时发布两个产物
+- 版本号自动同步
 
-### 客户端发布
+## 🚀 发布流程
 
-- 配置 GitHub Token：`export GITHUB_TOKEN=your_token`
-- 确保 Tauri 构建环境已配置
-
-### SDK 发布
-
-- 登录 NPM：`npm login`
-- 确保有 NPM 发布权限
-
-## 发布流程
-
-### 发布客户端
+### 本地发布
 
 ```bash
 # 1. 确保代码已提交
@@ -29,59 +20,43 @@ git status
 pnpm lint
 
 # 3. 发布补丁版本（0.1.0 -> 0.1.1）
-pnpm release:client
+pnpm release
 
 # 或发布次版本（0.1.0 -> 0.2.0）
-pnpm release:client:minor
+pnpm release:minor
 
 # 或发布主版本（0.1.0 -> 1.0.0）
-pnpm release:client:major
+pnpm release:major
 ```
 
-**发布流程：**
+### 发布步骤
 
-1. 运行 lint 检查
-2. 更新版本号
-3. 生成 CHANGELOG
-4. 构建 Tauri 应用（所有平台）
-5. 创建 Git tag（格式：`client-v1.0.0`）
-6. 推送到 GitHub
-7. 创建 GitHub Release
-8. 上传构建产物到 Release
+执行 `pnpm release` 后会自动：
 
-### 发布 SDK
+1. ✅ 运行 lint 检查
+2. ✅ 更新根目录版本号
+3. ✅ 同步 SDK 版本号
+4. ✅ 生成 CHANGELOG
+5. ✅ 构建 Tauri 应用
+6. ✅ 创建 Git tag（格式：`v1.0.0`）
+7. ✅ 推送到 GitHub
+8. ✅ 发布 SDK 到 NPM
+9. ✅ 创建 GitHub Release
+
+### CI/CD 自动发布
+
+推送 tag 后，GitHub Actions 会自动：
+
+1. 发布 SDK 到 NPM
+2. 构建所有平台的客户端（macOS、Windows、Linux）
+3. 上传构建产物到 GitHub Release
 
 ```bash
-# 1. 确保代码已提交
-git status
-
-# 2. 发布补丁版本（0.1.0 -> 0.1.1）
-pnpm release:sdk
-
-# 或发布次版本（0.1.0 -> 0.2.0）
-pnpm release:sdk:minor
-
-# 或发布主版本（0.1.0 -> 1.0.0）
-pnpm release:sdk:major
+# 手动触发 CI/CD
+git push origin v1.0.0
 ```
 
-**发布流程：**
-
-1. 运行 lint 检查
-2. 更新版本号
-3. 生成 CHANGELOG
-4. 创建 Git tag（格式：`sdk-v1.0.0`）
-5. 推送到 GitHub
-6. 创建 GitHub Release
-7. 发布到 NPM
-
-## 版本管理策略
-
-### 独立版本
-
-- 客户端和 SDK 使用独立的版本号
-- 可以独立发布，互不影响
-- Tag 格式区分：`client-v1.0.0` 和 `sdk-v1.0.0`
+## 📋 版本管理
 
 ### 语义化版本
 
@@ -104,80 +79,112 @@ pnpm release:sdk:major
 - `test:` - 测试相关
 - `chore:` - 构建/工具相关
 
-## 发布检查清单
+## ✅ 发布检查清单
 
-### 客户端发布前
+### 发布前
 
 - [ ] 所有测试通过
 - [ ] Lint 检查通过
 - [ ] 更新 README（如有必要）
 - [ ] 检查 Tauri 配置
 - [ ] 本地构建测试
+- [ ] 确认 NPM 登录状态
 
-### SDK 发布前
+### 发布后
 
-- [ ] 所有测试通过
-- [ ] Lint 检查通过
-- [ ] 更新 README（如有必要）
-- [ ] 更新类型定义
-- [ ] 检查 package.json 的 files 字段
+- [ ] 验证 NPM 包已发布
+- [ ] 验证 GitHub Release 已创建
+- [ ] 测试安装 SDK：`npm install @react-native-dev-lens/sdk`
+- [ ] 测试下载客户端安装包
 
-## 回滚
+## 🔧 配置要求
 
-### 客户端
-
-```bash
-# 删除 GitHub Release
-# 删除 Git tag
-git tag -d client-v1.0.0
-git push origin :refs/tags/client-v1.0.0
-```
-
-### SDK
+### NPM 发布
 
 ```bash
-# 废弃 NPM 版本
-npm deprecate dev-lens-sdk@1.0.0 "This version has been deprecated"
+# 登录 NPM
+npm login
 
-# 删除 Git tag
-git tag -d sdk-v1.0.0
-git push origin :refs/tags/sdk-v1.0.0
+# 创建组织（首次）
+# 访问 https://www.npmjs.com/org/create
+# 创建组织：@react-native-dev-lens
 ```
 
-## 自动化 CI/CD（可选）
+### GitHub Token
 
-可以使用 GitHub Actions 自动化发布流程：
+在 GitHub 仓库设置中添加 Secrets：
 
-```yaml
-# .github/workflows/release-client.yml
-name: Release Client
-on:
-  push:
-    tags:
-      - 'client-v*'
+- `NPM_TOKEN` - NPM 发布 token
+- `GITHUB_TOKEN` - 自动提供，无需配置
 
-# .github/workflows/release-sdk.yml
-name: Release SDK
-on:
-  push:
-    tags:
-      - 'sdk-v*'
+## 🔄 回滚
+
+### 回滚 NPM 包
+
+```bash
+# 废弃版本
+npm deprecate @react-native-dev-lens/sdk@1.0.0 "This version has been deprecated"
 ```
 
-## 常见问题
+### 回滚 GitHub Release
 
-### Q: 如何同时发布客户端和 SDK？
+1. 在 GitHub Releases 页面删除 Release
+2. 删除 Git tag：
 
-A: 分别运行两个发布命令，它们会创建不同的 tag 和 release。
+```bash
+git tag -d v1.0.0
+git push origin :refs/tags/v1.0.0
+```
 
-### Q: 版本号不同步会有问题吗？
+## 📊 发布历史
 
-A: 不会，它们是独立的产物，可以有不同的版本号。
+查看所有发布：
 
-### Q: 如何查看发布历史？
+```bash
+# 查看所有 tags
+git tag -l
 
-A: 查看 GitHub Releases 页面，或使用 `git tag -l` 查看所有 tag。
+# 查看 NPM 包版本
+npm view @react-native-dev-lens/sdk versions
+
+# 查看 GitHub Releases
+# https://github.com/yourusername/dev-lens/releases
+```
+
+## 🐛 常见问题
+
+### Q: 为什么要统一版本号？
+
+A: 因为客户端和 SDK 是配套使用的，统一版本号可以：
+
+- 避免版本不匹配的问题
+- 简化发布流程
+- 用户更容易理解版本对应关系
+
+### Q: 如何只更新 SDK 不构建客户端？
+
+A: 不建议这样做。如果确实需要，可以手动发布：
+
+```bash
+cd packages/sdk
+npm version patch
+npm publish
+```
 
 ### Q: 构建失败怎么办？
 
-A: 检查 Tauri 构建环境，查看错误日志，修复后重新发布。
+A:
+
+1. 检查 Tauri 构建环境
+2. 查看 GitHub Actions 日志
+3. 本地测试：`pnpm tauri build`
+4. 修复后重新发布
+
+### Q: NPM 发布失败？
+
+A:
+
+1. 检查是否登录：`npm whoami`
+2. 检查组织权限
+3. 检查包名是否已存在
+4. 确认 `publishConfig.access: "public"`

@@ -10,12 +10,10 @@
     "tauri": "tauri",
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
     "lint:fix": "eslint . --ext .ts,.tsx,.js,.jsx --fix",
-    "release:client": "release-it",
-    "release:client:minor": "release-it minor",
-    "release:client:major": "release-it major",
-    "release:sdk": "pnpm --filter @react-native-dev-lens/sdk release",
-    "release:sdk:minor": "pnpm --filter @react-native-dev-lens/sdk release:minor",
-    "release:sdk:major": "pnpm --filter @react-native-dev-lens/sdk release:major"
+    "sync-version": "node scripts/sync-version.js",
+    "release": "release-it",
+    "release:minor": "release-it minor",
+    "release:major": "release-it major"
   },
   "dependencies": {
     "@emoji-mart/data": "^1.2.1",
