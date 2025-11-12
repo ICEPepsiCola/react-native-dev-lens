@@ -1,27 +1,27 @@
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { FetchXHRList } from '../components/FetchXHRList';
-import { WebSocketList } from '../components/WebSocketList';
-import type { NetworkRequest, FilterType } from '../types';
+import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { FetchXHRList } from '../components/FetchXHRList'
+import { WebSocketList } from '../components/WebSocketList'
+import type { NetworkRequest, FilterType } from '../types'
 
 interface NetworkPageProps {
   networkRequests: NetworkRequest[];
 }
 
 export function NetworkPage({ networkRequests }: NetworkPageProps) {
-  const { t } = useTranslation();
-  const [filterType, setFilterType] = useState<FilterType>('All');
-  const [urlFilter, setUrlFilter] = useState<string>('');
+  const { t } = useTranslation()
+  const [filterType, setFilterType] = useState<FilterType>('All')
+  const [urlFilter, setUrlFilter] = useState<string>('')
 
   const filteredRequests = networkRequests.filter(req => {
-    const typeMatch = filterType === 'All' || req.type === filterType;
-    const urlMatch = req.url.toLowerCase().includes(urlFilter.toLowerCase());
-    return typeMatch && urlMatch;
-  });
+    const typeMatch = filterType === 'All' || req.type === filterType
+    const urlMatch = req.url.toLowerCase().includes(urlFilter.toLowerCase())
+    return typeMatch && urlMatch
+  })
 
   // 分离 Fetch/XHR 和 WebSocket 请求
-  const fetchXHRRequests = filteredRequests.filter(req => req.type === 'Fetch/XHR');
-  const socketRequests = filteredRequests.filter(req => req.type === 'Socket');
+  const fetchXHRRequests = filteredRequests.filter(req => req.type === 'Fetch/XHR')
+  const socketRequests = filteredRequests.filter(req => req.type === 'Socket')
 
   return (
     <div className="flex flex-col h-full gap-4">
@@ -32,7 +32,7 @@ export function NetworkPage({ networkRequests }: NetworkPageProps) {
           placeholder={t('filterByUrl')}
           className="input input-sm grow bg-base-200 border-base-300 outline-none focus:outline-none focus:border-primary"
           value={urlFilter}
-          onChange={(e) => setUrlFilter(e.target.value)}
+          onChange={e => setUrlFilter(e.target.value)}
         />
         <div className="join">
           {(['All', 'Fetch/XHR', 'Socket'] as FilterType[]).map(type => (
@@ -60,7 +60,7 @@ export function NetworkPage({ networkRequests }: NetworkPageProps) {
               {(filterType === 'All' || filterType === 'Fetch/XHR') && fetchXHRRequests.length > 0 && (
                 <FetchXHRList requests={fetchXHRRequests} />
               )}
-              
+
               {/* Show WebSocket when filter is All or Socket */}
               {(filterType === 'All' || filterType === 'Socket') && socketRequests.length > 0 && (
                 <WebSocketList requests={socketRequests} />
@@ -70,5 +70,5 @@ export function NetworkPage({ networkRequests }: NetworkPageProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }

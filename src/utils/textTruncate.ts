@@ -6,8 +6,8 @@
  * @returns 是否需要截断
  */
 export function shouldTruncateText(text: string, maxLines = 3, maxChars = 500): boolean {
-  const lines = text.split('\n');
-  return lines.length > maxLines || text.length > maxChars;
+  const lines = text.split('\n')
+  return lines.length > maxLines || text.length > maxChars
 }
 
 /**
@@ -18,19 +18,19 @@ export function shouldTruncateText(text: string, maxLines = 3, maxChars = 500): 
  * @returns 截断后的文本
  */
 export function truncateText(text: string, maxLines = 3, maxChars = 500): string {
-  const lines = text.split('\n');
-  
+  const lines = text.split('\n')
+
   // 如果行数超过限制，按行截断
   if (lines.length > maxLines) {
-    return lines.slice(0, maxLines).join('\n');
+    return lines.slice(0, maxLines).join('\n')
   }
-  
+
   // 如果字符数超过限制，按字符截断
   if (text.length > maxChars) {
-    return text.substring(0, maxChars) + '...';
+    return text.substring(0, maxChars) + '...'
   }
-  
-  return text;
+
+  return text
 }
 
 /**
@@ -40,13 +40,13 @@ export function truncateText(text: string, maxLines = 3, maxChars = 500): string
  * @returns 隐藏的行数和字符数
  */
 export function getHiddenStats(text: string, truncated: string): { lines: number; chars: number } {
-  const totalLines = text.split('\n').length;
-  const visibleLines = truncated.split('\n').length;
-  const hiddenLines = totalLines - visibleLines;
-  const hiddenChars = text.length - truncated.length;
-  
+  const totalLines = text.split('\n').length
+  const visibleLines = truncated.split('\n').length
+  const hiddenLines = totalLines - visibleLines
+  const hiddenChars = text.length - truncated.length
+
   return {
     lines: hiddenLines,
     chars: hiddenChars,
-  };
+  }
 }

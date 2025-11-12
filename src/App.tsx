@@ -1,106 +1,106 @@
-import { useState, useEffect } from 'react';
-import { listen } from '@tauri-apps/api/event';
-import { useTranslation } from 'react-i18next';
-import { Toaster } from 'react-hot-toast';
-import { Emoji } from './components/Emoji';
-import { NetworkPage } from './pages/NetworkPage';
-import { ConsolePage } from './pages/ConsolePage';
-import type { NetworkRequest, ConsoleLog } from './types';
-import './App.css';
+import { useState, useEffect } from 'react'
+import { listen } from '@tauri-apps/api/event'
+import { useTranslation } from 'react-i18next'
+import { Toaster } from 'react-hot-toast'
+import { Emoji } from './components/Emoji'
+import { NetworkPage } from './pages/NetworkPage'
+import { ConsolePage } from './pages/ConsolePage'
+import type { NetworkRequest, ConsoleLog } from './types'
+import './App.css'
 
 function App() {
-  const { t, i18n } = useTranslation();
-  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
-  const [activeTab, setActiveTab] = useState('network');
-  const [networkRequests, setNetworkRequests] = useState<NetworkRequest[]>([]);
-  const [consoleLogs, setConsoleLogs] = useState<ConsoleLog[]>([]);
+  const { t, i18n } = useTranslation()
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark')
+  const [activeTab, setActiveTab] = useState('network')
+  const [networkRequests, setNetworkRequests] = useState<NetworkRequest[]>([])
+  const [consoleLogs, setConsoleLogs] = useState<ConsoleLog[]>([])
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.setAttribute('data-theme', theme)
     // 为 Tailwind dark mode 添加 class
     if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
+      document.documentElement.classList.add('dark')
     } else {
-      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.remove('dark')
     }
-  }, [theme]);
+  }, [theme])
 
   const toggleTheme = () => {
-    setTheme(prev => prev === 'light' ? 'dark' : 'light');
-  };
+    setTheme(prev => prev === 'light' ? 'dark' : 'light')
+  }
 
   const toggleLanguage = () => {
-    i18n.changeLanguage(i18n.language === 'zh' ? 'en' : 'zh');
-  };
+    i18n.changeLanguage(i18n.language === 'zh' ? 'en' : 'zh')
+  }
 
   useEffect(() => {
-    const unlistenNetwork = listen<NetworkRequest>('network-log', (event) => {
-      setNetworkRequests((prev) => [event.payload, ...prev]);
-    });
+    const unlistenNetwork = listen<NetworkRequest>('network-log', event => {
+      setNetworkRequests(prev => [event.payload, ...prev])
+    })
 
-    const unlistenConsole = listen<ConsoleLog>('console-log', (event) => {
-      setConsoleLogs((prev) => [event.payload, ...prev]);
-    });
+    const unlistenConsole = listen<ConsoleLog>('console-log', event => {
+      setConsoleLogs(prev => [event.payload, ...prev])
+    })
 
-    const unlistenWebSocket = listen<{ ws_id: string; update: any }>('websocket-update', (event) => {
-      const { ws_id, update } = event.payload;
-      
-      setNetworkRequests((prev) => {
-        const index = prev.findIndex(req => req.id === ws_id);
-        if (index === -1) return prev;
-        
-        const updated = [...prev];
-        const wsRequest = { ...updated[index] };
-        
+    const unlistenWebSocket = listen<{ ws_id: string; update: any }>('websocket-update', event => {
+      const { ws_id, update } = event.payload
+
+      setNetworkRequests(prev => {
+        const index = prev.findIndex(req => req.id === ws_id)
+        if (index === -1) return prev
+
+        const updated = [...prev]
+        const wsRequest = { ...updated[index] }
+
         // Update state
         if (update.state) {
-          wsRequest.ws_state = update.state;
+          wsRequest.ws_state = update.state
         }
-        
+
         // Update status
         if (update.status !== undefined) {
-          wsRequest.status = update.status;
+          wsRequest.status = update.status
         }
-        
+
         // Update response time
         if (update.response_time !== undefined) {
-          wsRequest.response_time = update.response_time;
+          wsRequest.response_time = update.response_time
         }
-        
+
         // Add message
         if (update.message) {
           if (!wsRequest.ws_messages) {
-            wsRequest.ws_messages = [];
+            wsRequest.ws_messages = []
           }
-          wsRequest.ws_messages.push(update.message);
+          wsRequest.ws_messages.push(update.message)
         }
-        
+
         // Update error or close reason
         if (update.error) {
-          wsRequest.response = `Error: ${update.error}`;
+          wsRequest.response = `Error: ${update.error}`
         } else if (update.close_reason) {
-          wsRequest.response = `Closed: ${update.close_reason}`;
+          wsRequest.response = `Closed: ${update.close_reason}`
         }
-        
-        updated[index] = wsRequest;
-        return updated;
-      });
-    });
+
+        updated[index] = wsRequest
+        return updated
+      })
+    })
 
     return () => {
-      unlistenNetwork.then(f => f());
-      unlistenConsole.then(f => f());
-      unlistenWebSocket.then(f => f());
-    };
-  }, []);
+      unlistenNetwork.then(f => f())
+      unlistenConsole.then(f => f())
+      unlistenWebSocket.then(f => f())
+    }
+  }, [])
 
   const handleClear = () => {
     if (activeTab === 'network') {
-      setNetworkRequests([]);
+      setNetworkRequests([])
     } else {
-      setConsoleLogs([]);
+      setConsoleLogs([])
     }
-  };
+  }
 
   return (
     <div className="flex flex-col h-screen bg-base-100">
@@ -164,7 +164,7 @@ function App() {
       {/* Toast Notifications */}
       <Toaster />
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

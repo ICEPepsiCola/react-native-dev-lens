@@ -1,9 +1,9 @@
-import { useState, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Emoji } from './Emoji';
-import { CopyButton } from './CopyButton';
-import { shouldTruncateText, truncateText, getHiddenStats } from '../utils/textTruncate';
-import type { NetworkRequest, WebSocketMessage } from '../types';
+import { useState, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
+import { Emoji } from './Emoji'
+import { CopyButton } from './CopyButton'
+import { shouldTruncateText, truncateText, getHiddenStats } from '../utils/textTruncate'
+import type { NetworkRequest, WebSocketMessage } from '../types'
 
 interface WebSocketListProps {
   requests: NetworkRequest[];
@@ -15,23 +15,23 @@ interface WebSocketGroup {
 }
 
 export function WebSocketList({ requests }: WebSocketListProps) {
-  const { t } = useTranslation();
-  const [expandedUrl, setExpandedUrl] = useState<string | null>(null);
-  const [expandedMessageIds, setExpandedMessageIds] = useState<Set<string>>(new Set());
+  const { t } = useTranslation()
+  const [expandedUrl, setExpandedUrl] = useState<string | null>(null)
+  const [expandedMessageIds, setExpandedMessageIds] = useState<Set<string>>(new Set())
 
   // 按 URL 分组
   const groupedSockets = useMemo(() => {
-    const groups = new Map<string, WebSocketGroup>();
+    const groups = new Map<string, WebSocketGroup>()
 
     requests.forEach(req => {
       if (!groups.has(req.url)) {
         groups.set(req.url, {
           url: req.url,
           allMessages: [],
-        });
+        })
       }
 
-      const group = groups.get(req.url)!;
+      const group = groups.get(req.url)!
 
       // 收集所有消息并标记来自哪个连接
       if (req.ws_messages) {
@@ -39,57 +39,57 @@ export function WebSocketList({ requests }: WebSocketListProps) {
           group.allMessages.push({
             ...msg,
             connectionId: req.id,
-          });
-        });
+          })
+        })
       }
-    });
+    })
 
     // 按时间戳排序消息
     groups.forEach(group => {
-      group.allMessages.sort((a, b) => a.timestamp - b.timestamp);
-    });
+      group.allMessages.sort((a, b) => a.timestamp - b.timestamp)
+    })
 
-    return Array.from(groups.values());
-  }, [requests]);
+    return Array.from(groups.values())
+  }, [requests])
 
   const toggleExpand = (url: string) => {
-    setExpandedUrl(expandedUrl === url ? null : url);
-  };
+    setExpandedUrl(expandedUrl === url ? null : url)
+  }
 
   const toggleMessageExpand = (msgId: string) => {
-    const newExpanded = new Set(expandedMessageIds);
+    const newExpanded = new Set(expandedMessageIds)
     if (newExpanded.has(msgId)) {
-      newExpanded.delete(msgId);
+      newExpanded.delete(msgId)
     } else {
-      newExpanded.add(msgId);
+      newExpanded.add(msgId)
     }
-    setExpandedMessageIds(newExpanded);
-  };
+    setExpandedMessageIds(newExpanded)
+  }
 
   const formatTimestamp = (timestamp: number) => {
-    const date = new Date(timestamp);
-    const time = date.toLocaleTimeString('en-US', { 
-      hour12: false, 
-      hour: '2-digit', 
-      minute: '2-digit', 
-      second: '2-digit'
-    });
-    const ms = date.getMilliseconds().toString().padStart(3, '0');
-    return `${time}.${ms}`;
-  };
+    const date = new Date(timestamp)
+    const time = date.toLocaleTimeString('en-US', {
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    })
+    const ms = date.getMilliseconds().toString().padStart(3, '0')
+    return `${time}.${ms}`
+  }
 
   if (groupedSockets.length === 0) {
     return (
       <div className="flex items-center justify-center h-full">
         <p className="text-base-content opacity-50">{t('noRequests')}</p>
       </div>
-    );
+    )
   }
 
   return (
     <div>
-      {groupedSockets.map((group) => {
-        const isExpanded = expandedUrl === group.url;
+      {groupedSockets.map(group => {
+        const isExpanded = expandedUrl === group.url
 
         return (
           <div key={group.url} className="border-b border-base-300 last:border-b-0">
@@ -130,13 +130,13 @@ export function WebSocketList({ requests }: WebSocketListProps) {
                   </div>
                 ) : (
                   <div className="space-y-2 max-h-[500px] overflow-y-auto">
-                    {group.allMessages.map((msg) => {
-                      const isExpanded = expandedMessageIds.has(msg.id);
-                      const shouldTruncate = shouldTruncateText(msg.data);
+                    {group.allMessages.map(msg => {
+                      const isExpanded = expandedMessageIds.has(msg.id)
+                      const shouldTruncate = shouldTruncateText(msg.data)
                       const displayData = !isExpanded && shouldTruncate
                         ? truncateText(msg.data)
-                        : msg.data;
-                      const hiddenStats = shouldTruncate ? getHiddenStats(msg.data, displayData) : null;
+                        : msg.data
+                      const hiddenStats = shouldTruncate ? getHiddenStats(msg.data, displayData) : null
 
                       return (
                         <div key={msg.id} className="flex items-start gap-2 bg-base-100 p-2 rounded">
@@ -144,7 +144,7 @@ export function WebSocketList({ requests }: WebSocketListProps) {
                           <span className="text-xs opacity-50 font-mono shrink-0 mt-1 w-24">
                             {formatTimestamp(msg.timestamp)}
                           </span>
-                          
+
                           {/* 方向标识 */}
                           <span
                             className={`badge badge-xs shrink-0 mt-1 ${
@@ -167,7 +167,7 @@ export function WebSocketList({ requests }: WebSocketListProps) {
                                   </>
                                 ) : (
                                   <>
-                                    <Emoji native="▼" size={12} /> {t('showMore')} 
+                                    <Emoji native="▼" size={12} /> {t('showMore')}
                                     {hiddenStats && hiddenStats.lines > 0 && ` (${hiddenStats.lines} ${t('moreLines')})`}
                                     {hiddenStats && hiddenStats.chars > 0 && hiddenStats.lines === 0 && ` (${hiddenStats.chars} chars)`}
                                   </>
@@ -182,15 +182,15 @@ export function WebSocketList({ requests }: WebSocketListProps) {
                           {/* 复制按钮 */}
                           <CopyButton text={msg.data} showText={false} size="xs" className="shrink-0 mt-1" />
                         </div>
-                      );
+                      )
                     })}
                   </div>
                 )}
               </div>
             )}
           </div>
-        );
+        )
       })}
     </div>
-  );
+  )
 }

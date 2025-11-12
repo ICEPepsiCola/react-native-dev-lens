@@ -27,8 +27,8 @@ type EmojiProps = {
   fallback?: string;
   class?: string;
   style?: React.CSSProperties;
-};
+}
 
 export function Emoji({ set = 'apple', ...props }: EmojiProps) {
-  return <em-emoji set={set} {...props} />;
+  return <em-emoji set={set} {...props} />
 }

@@ -1,26 +1,26 @@
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Emoji } from '@/components/Emoji';
-import { CopyButton } from '@/components/CopyButton';
-import type { ConsoleLog, LogLevelFilter } from '@/types';
+import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { Emoji } from '@/components/Emoji'
+import { CopyButton } from '@/components/CopyButton'
+import type { ConsoleLog, LogLevelFilter } from '@/types'
 
 interface ConsolePageProps {
   consoleLogs: ConsoleLog[];
 }
 
 export function ConsolePage({ consoleLogs }: ConsolePageProps) {
-  const { t } = useTranslation();
-  const [expandedLogIndices, setExpandedLogIndices] = useState<Set<number>>(new Set());
-  const [logLevelFilter, setLogLevelFilter] = useState<LogLevelFilter>('all');
-  const [logMessageFilter, setLogMessageFilter] = useState<string>('');
+  const { t } = useTranslation()
+  const [expandedLogIndices, setExpandedLogIndices] = useState<Set<number>>(new Set())
+  const [logLevelFilter, setLogLevelFilter] = useState<LogLevelFilter>('all')
+  const [logMessageFilter, setLogMessageFilter] = useState<string>('')
 
   const filteredLogs = consoleLogs
     .map((log, index) => ({ log, index }))
     .filter(({ log }) => {
-      const levelMatch = logLevelFilter === 'all' || log.level === logLevelFilter;
-      const messageMatch = log.message.toLowerCase().includes(logMessageFilter.toLowerCase());
-      return levelMatch && messageMatch;
-    });
+      const levelMatch = logLevelFilter === 'all' || log.level === logLevelFilter
+      const messageMatch = log.message.toLowerCase().includes(logMessageFilter.toLowerCase())
+      return levelMatch && messageMatch
+    })
 
   return (
     <div className="flex flex-col h-full gap-4">
@@ -31,7 +31,7 @@ export function ConsolePage({ consoleLogs }: ConsolePageProps) {
           placeholder={t('filterByMessage')}
           className="input input-sm grow bg-base-200 border-base-300 outline-none focus:outline-none focus:border-primary"
           value={logMessageFilter}
-          onChange={(e) => setLogMessageFilter(e.target.value)}
+          onChange={e => setLogMessageFilter(e.target.value)}
         />
         <div className="join">
           {(['all', 'info', 'warn', 'error'] as const).map(level => (
@@ -57,12 +57,12 @@ export function ConsolePage({ consoleLogs }: ConsolePageProps) {
           ) : (
             <div>
               {filteredLogs.map(({ log, index }) => {
-                const isExpanded = expandedLogIndices.has(index);
-                const lines = log.message.split('\n');
-                const shouldTruncate = lines.length > 3;
+                const isExpanded = expandedLogIndices.has(index)
+                const lines = log.message.split('\n')
+                const shouldTruncate = lines.length > 3
                 const displayMessage = !isExpanded && shouldTruncate
                   ? lines.slice(0, 4).join('\n')
-                  : log.message;
+                  : log.message
 
                 return (
                   <div
@@ -71,8 +71,8 @@ export function ConsolePage({ consoleLogs }: ConsolePageProps) {
                       log.level === 'error'
                         ? 'log-error-bg'
                         : log.level === 'warn'
-                        ? 'log-warn-bg'
-                        : ''
+                          ? 'log-warn-bg'
+                          : ''
                     }`}
                   >
                     <div className="flex items-start gap-2">
@@ -81,8 +81,8 @@ export function ConsolePage({ consoleLogs }: ConsolePageProps) {
                           log.level === 'error'
                             ? 'badge-error'
                             : log.level === 'warn'
-                            ? 'badge-warning'
-                            : 'badge-info'
+                              ? 'badge-warning'
+                              : 'badge-info'
                         }`}
                       >
                         {log.level.toUpperCase()}
@@ -93,13 +93,13 @@ export function ConsolePage({ consoleLogs }: ConsolePageProps) {
                             <button
                               className="btn btn-ghost btn-xs outline-none flex items-center gap-1"
                               onClick={() => {
-                                const newExpanded = new Set(expandedLogIndices);
+                                const newExpanded = new Set(expandedLogIndices)
                                 if (isExpanded) {
-                                  newExpanded.delete(index);
+                                  newExpanded.delete(index)
                                 } else {
-                                  newExpanded.add(index);
+                                  newExpanded.add(index)
                                 }
-                                setExpandedLogIndices(newExpanded);
+                                setExpandedLogIndices(newExpanded)
                               }}
                             >
                               {isExpanded ? (
@@ -121,12 +121,12 @@ export function ConsolePage({ consoleLogs }: ConsolePageProps) {
                       </div>
                     </div>
                   </div>
-                );
+                )
               })}
             </div>
           )}
         </div>
       </div>
     </div>
-  );
+  )
 }

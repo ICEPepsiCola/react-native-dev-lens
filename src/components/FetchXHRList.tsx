@@ -1,39 +1,39 @@
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { CopyButton } from './CopyButton';
-import type { NetworkRequest, DetailTab } from '../types';
+import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { CopyButton } from './CopyButton'
+import type { NetworkRequest, DetailTab } from '../types'
 
 interface FetchXHRListProps {
   requests: NetworkRequest[];
 }
 
 export function FetchXHRList({ requests }: FetchXHRListProps) {
-  const { t } = useTranslation();
-  const [expandedRequestId, setExpandedRequestId] = useState<string | null>(null);
-  const [activeDetailTab, setActiveDetailTab] = useState<DetailTab>('General');
+  const { t } = useTranslation()
+  const [expandedRequestId, setExpandedRequestId] = useState<string | null>(null)
+  const [activeDetailTab, setActiveDetailTab] = useState<DetailTab>('General')
 
   const toHeaderCase = (str: string): string => {
     return str
       .split('-')
       .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join('-');
-  };
+      .join('-')
+  }
 
   const toggleRequestDetails = (id: string) => {
     if (expandedRequestId === id) {
-      setExpandedRequestId(null);
+      setExpandedRequestId(null)
     } else {
-      setExpandedRequestId(id);
-      setActiveDetailTab('General');
+      setExpandedRequestId(id)
+      setActiveDetailTab('General')
     }
-  };
+  }
 
   const renderDetailView = (req: NetworkRequest) => {
     const detailTabs: { key: DetailTab; label: string }[] = [
       { key: 'General', label: t('general') },
       { key: 'Headers', label: t('headers') },
       { key: 'Response', label: t('response') },
-    ];
+    ]
 
     return (
       <div className="p-4 bg-base-200">
@@ -81,8 +81,8 @@ export function FetchXHRList({ requests }: FetchXHRListProps) {
           {activeDetailTab === 'Response' && (
             <div className="bg-base-300 rounded-lg p-4">
               <div className="flex justify-end mb-2">
-                <CopyButton 
-                  text={req.response ? JSON.stringify(JSON.parse(req.response), null, 2) : ''} 
+                <CopyButton
+                  text={req.response ? JSON.stringify(JSON.parse(req.response), null, 2) : ''}
                   size="sm"
                 />
               </div>
@@ -93,8 +93,8 @@ export function FetchXHRList({ requests }: FetchXHRListProps) {
           )}
         </div>
       </div>
-    );
-  };
+    )
+  }
 
   const renderHeaders = (headers: Record<string, string>) => (
     <div className="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-2 text-sm items-baseline">
@@ -107,19 +107,19 @@ export function FetchXHRList({ requests }: FetchXHRListProps) {
           </React.Fragment>
         ))}
     </div>
-  );
+  )
 
   if (requests.length === 0) {
     return (
       <div className="flex items-center justify-center h-full">
         <p className="text-base-content opacity-50">{t('noRequests')}</p>
       </div>
-    );
+    )
   }
 
   return (
     <div>
-      {requests.map((req) => (
+      {requests.map(req => (
         <div key={req.id} className="border-b border-base-300 last:border-b-0">
           <div
             onClick={() => toggleRequestDetails(req.id)}
@@ -136,5 +136,5 @@ export function FetchXHRList({ requests }: FetchXHRListProps) {
         </div>
       ))}
     </div>
-  );
+  )
 }

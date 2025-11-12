@@ -1,4 +1,4 @@
-export type RequestType = 'Fetch/XHR' | 'Socket';
+export type RequestType = 'Fetch/XHR' | 'Socket'
 
 export interface WebSocketMessage {
   id: string;
@@ -29,6 +29,6 @@ export interface ConsoleLog {
   message: string;
 }
 
-export type DetailTab = 'General' | 'Headers' | 'Response';
-export type FilterType = 'All' | RequestType;
-export type LogLevelFilter = 'all' | 'info' | 'warn' | 'error';
+export type DetailTab = 'General' | 'Headers' | 'Response'
+export type FilterType = 'All' | RequestType
+export type LogLevelFilter = 'all' | 'info' | 'warn' | 'error'
