@@ -1,7 +1,7 @@
 # Dev Lens
 
 <div align="center">
-  <img src="src/assets/logo.svg" width="120" height="120" alt="Dev Lens Logo">
+  <img src="https://raw.githubusercontent.com/ICEPepsiCola/react-native-dev-lens/main/public/logo.svg" width="120" height="120" alt="Dev Lens Logo">
   <p><strong>优雅的开发者网络监控工具</strong></p>
   <p>实时监控网络请求和控制台日志，支持深色/浅色主题</p>
   <p>
@@ -23,8 +23,8 @@
 ### 给用户（React Native 开发者）
 
 1. **下载 Dev Lens 应用**
-   
-   从 [GitHub Releases](https://github.com/yourusername/dev-lens/releases) 下载最新版本
+
+   从 [GitHub Releases](https://github.com/ICEPepsiCola/react-native-dev-lens/releases) 下载最新版本
 
 2. **在你的 React Native 项目中安装 SDK**
 
@@ -39,36 +39,31 @@
 3. **在应用入口添加一行代码**（例如 `index.js` 或 `App.js`）
 
    ```javascript
-   import DevLens from 'dev-lens-sdk';
-   
+   import DevLens from "react-native-dev-lens";
+
    // 就这一行！启用监控
    new DevLens().init();
    ```
 
 4. **打开 Dev Lens 应用**
-   
+
    启动 Dev Lens 桌面应用，你就能实时看到所有网络请求和控制台日志了！
 
 ### 配置（可选）
 
 ```javascript
-import DevLens from 'dev-lens-sdk';
+import DevLens from "react-native-dev-lens";
 
 // 仅在开发模式启用
 if (__DEV__) {
-  new DevLens({
-    baseUrl: 'http://127.0.0.1:9527', // Dev Lens 服务器地址
-  }).init();
+  new DevLens().init();
 }
-
-// 真机调试时，使用电脑的 IP 地址
-// new DevLens({ baseUrl: 'http://192.168.1.100:9527' }).init();
 ```
 
 ## 📦 包含内容
 
 - **Dev Lens 应用** - 桌面应用程序（macOS/Windows/Linux）
-- **dev-lens-sdk** - NPM 包，方便集成
+- **react-native-dev-lens** - NPM 包，方便集成
 
 ## 🛠️ 给贡献者
 
@@ -104,7 +99,7 @@ dev-lens/
 │   │   └── lib.rs         # Rust 后端（包含 HTTP 服务器）
 │   └── icons/             # 应用图标
 ├── sdk/                   # 集成 SDK
-│   └── dev-lens-sdk/      # NPM 包
+│   └── react-native-dev-lens/      # NPM 包
 └── public/                # 公共资源
 ```
 
@@ -161,9 +156,9 @@ MIT License
 
 ## 🔗 链接
 
-- [GitHub 仓库](https://github.com/yourusername/dev-lens)
-- [问题追踪](https://github.com/yourusername/dev-lens/issues)
-- [发布版本](https://github.com/yourusername/dev-lens/releases)
+- [GitHub 仓库](https://github.com/ICEPepsiCola/react-native-dev-lens)
+- [问题追踪](https://github.com/ICEPepsiCola/react-native-dev-lens/issues)
+- [发布版本](https://github.com/ICEPepsiCola/react-native-dev-lens/releases)
 
 ---
 

@@ -1,5 +1,4 @@
 export interface DevLensOptions {
-  baseUrl?: string;
   enabled?: boolean;
 }
 

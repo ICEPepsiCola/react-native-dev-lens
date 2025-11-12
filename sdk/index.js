@@ -85,7 +85,7 @@ const DEV_LENS_URL = 'http://127.0.0.1:9527'
 
 class DevLens {
   constructor(options = {}) {
-    this.baseUrl = options.baseUrl || DEV_LENS_URL
+    this.baseUrl = DEV_LENS_URL
     this.enabled = options.enabled !== false
   }
 
@@ -181,7 +181,7 @@ class DevLens {
       })
 
       XHRInterceptor.enableInterception()
-    } catch (_error) {
+    } catch (error) {
       console.warn('Dev Lens: Failed to setup network interceptor', error)
     }
   }

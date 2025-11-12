@@ -1,6 +1,6 @@
 {
   "name": "react-native-dev-lens",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Network and Console monitoring tool for React Native - Desktop App & SDK",
   "type": "module",
   "main": "sdk/index.js",
@@ -19,12 +19,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/dev-lens.git"
+    "url": "https://github.com/ICEPepsiCola/react-native-dev-lens.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/dev-lens/issues"
+    "url": "https://github.com/ICEPepsiCola/react-native-dev-lens/issues"
   },
-  "homepage": "https://github.com/yourusername/dev-lens#readme",
+  "homepage": "https://github.com/ICEPepsiCola/react-native-dev-lens#readme",
   "files": [
     "sdk/index.js",
     "sdk/index.d.ts",

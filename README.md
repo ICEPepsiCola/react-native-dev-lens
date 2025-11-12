@@ -1,7 +1,7 @@
 # Dev Lens
 
 <div align="center">
-  <img src="src/assets/logo.svg" width="120" height="120" alt="Dev Lens Logo">
+  <img src="https://raw.githubusercontent.com/ICEPepsiCola/react-native-dev-lens/main/public/logo.svg" width="120" height="120" alt="Dev Lens Logo">
   <p><strong>An elegant network monitoring tool for developers</strong></p>
   <p>Real-time monitoring of network requests and console logs with dark/light theme support</p>
   <p>
@@ -29,22 +29,22 @@
 
 1. **Download Dev Lens App**
 
-   Download the latest release from [GitHub Releases](https://github.com/yourusername/dev-lens/releases)
+   Download the latest release from [GitHub Releases](https://github.com/ICEPepsiCola/react-native-dev-lens/releases)
 
 2. **Install SDK in your React Native project**
 
    ```bash
-   npm install dev-lens-sdk
+   npm install react-native-dev-lens
    # or
-   yarn add dev-lens-sdk
+   yarn add react-native-dev-lens
    # or
-   pnpm add dev-lens-sdk
+   pnpm add react-native-dev-lens
    ```
 
 3. **Add one line to your app entry point** (e.g., `index.js` or `App.js`)
 
    ```javascript
-   import DevLens from "dev-lens-sdk";
+   import DevLens from "react-native-dev-lens";
 
    // That's it! One line to enable monitoring
    new DevLens().init();
@@ -57,23 +57,18 @@
 ### Configuration (Optional)
 
 ```javascript
-import DevLens from "dev-lens-sdk";
+import DevLens from "react-native-dev-lens";
 
 // Only enable in development mode
 if (__DEV__) {
-  new DevLens({
-    baseUrl: "http://127.0.0.1:9527", // Dev Lens server URL
-  }).init();
+  new DevLens().init();
 }
-
-// For physical devices, use your computer's IP address
-// new DevLens({ baseUrl: 'http://192.168.1.100:9527' }).init();
 ```
 
 ## 📦 What's Included
 
 - **Dev Lens App** - Desktop application (macOS/Windows/Linux)
-- **dev-lens-sdk** - NPM package for easy integration
+- **react-native-dev-lens** - NPM package for easy integration
 
 ## 🛠️ For Contributors
 
@@ -109,7 +104,7 @@ dev-lens/
 │   │   └── lib.rs         # Rust backend with HTTP server
 │   └── icons/             # Application icons
 ├── sdk/                   # SDK for integration
-│   └── dev-lens-sdk/      # NPM package
+│   └── react-native-dev-lens/      # NPM package
 └── public/                # Public assets
 ```
 
@@ -166,9 +161,9 @@ Issues and Pull Requests are welcome!
 
 ## 🔗 Links
 
-- [GitHub Repository](https://github.com/yourusername/dev-lens)
-- [Issue Tracker](https://github.com/yourusername/dev-lens/issues)
-- [Releases](https://github.com/yourusername/dev-lens/releases)
+- [GitHub Repository](https://github.com/ICEPepsiCola/react-native-dev-lens)
+- [Issue Tracker](https://github.com/ICEPepsiCola/react-native-dev-lens/issues)
+- [Releases](https://github.com/ICEPepsiCola/react-native-dev-lens/releases)
 
 ---
 
