@@ -31,6 +31,12 @@
 
    Download the latest release from [GitHub Releases](https://github.com/ICEPepsiCola/react-native-dev-lens/releases)
 
+   > **macOS Users**: If you see "App is damaged" error, run this command in Terminal:
+   >
+   > ```bash
+   > xattr -cr /Applications/dev-lens.app
+   > ```
+
 2. **Install SDK in your React Native project**
 
    ```bash

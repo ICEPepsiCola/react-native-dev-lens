@@ -9,6 +9,63 @@ on:
 
 jobs:
   release:
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - os: macos-latest
+            target: aarch64-apple-darwin
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+    
+    runs-on: ${{ matrix.platform.os }}
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 10.x
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          registry-url: 'https://registry.npmjs.org'
+      
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform.target }}
+      
+      - name: Install dependencies
+        run: pnpm install
+      
+      - name: Determine version type
+        id: version
+        shell: bash
+        run: |
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+          if [[ $TAG_NAME == patch-* ]]; then
+            echo "type=patch" >> $GITHUB_OUTPUT
+          elif [[ $TAG_NAME == minor-* ]]; then
+            echo "type=minor" >> $GITHUB_OUTPUT
+          elif [[ $TAG_NAME == major-* ]]; then
+            echo "type=major" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Lint
+        run: pnpm lint
+      
+      - name: Sync version
+        run: node scripts/sync-tauri-version.js ${{ steps.version.outputs.type }}
+      
+      - name: Build Tauri app
+        run: pnpm tauri build
+  
+  release:
+    needs: build
     runs-on: macos-latest
     permissions:
       contents: write
@@ -28,27 +85,22 @@ jobs:
           node-version: '22.x'
           registry-url: 'https://registry.npmjs.org'
       
-      - name: Install Rust stable
-        uses: dtolnay/rust-toolchain@stable
-      
       - name: Install dependencies
         run: pnpm install
       
       - name: Checkout main branch
         run: git checkout main
       
-      - name: Determine version type
-        id: version
+      - name: Configure Git
         run: |
-          TAG_NAME=${GITHUB_REF#refs/tags/}
-          if [[ $TAG_NAME == patch-* ]]; then
-            echo "type=patch" >> $GITHUB_OUTPUT
-          elif [[ $TAG_NAME == minor-* ]]; then
-            echo "type=minor" >> $GITHUB_OUTPUT
-          elif [[ $TAG_NAME == major-* ]]; then
-            echo "type=major" >> $GITHUB_OUTPUT
-          fi    
-
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+      
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: src-tauri/target/release/bundle
+      
       - name: Run release-it
         run: pnpm release-it ${{ steps.version.outputs.type }} --ci
         env:

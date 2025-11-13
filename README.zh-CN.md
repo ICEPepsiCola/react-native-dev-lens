@@ -26,6 +26,12 @@
 
    从 [GitHub Releases](https://github.com/ICEPepsiCola/react-native-dev-lens/releases) 下载最新版本
 
+   > **macOS 用户注意**: 如果遇到"应用已损坏"错误，在终端运行：
+   >
+   > ```bash
+   > xattr -cr /Applications/dev-lens.app
+   > ```
+
 2. **在你的 React Native 项目中安装 SDK**
 
    ```bash

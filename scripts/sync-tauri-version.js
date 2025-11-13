@@ -1,30 +1,44 @@
 #!/usr/bin/env node
 
 import fs from 'fs'
-import { execSync } from 'child_process'
 
-// Read package.json version
-const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'))
-const version = pkg.version
+// Get version type from command line argument (patch, minor, major)
+const versionType = process.argv[2]
 
-// Read tauri.conf.json
+if (!versionType || !['patch', 'minor', 'major'].includes(versionType)) {
+  console.error('Error: Valid version type is required (patch, minor, major)')
+  console.error('Usage: node sync-tauri-version.js <patch|minor|major>')
+  process.exit(1)
+}
+
+// Read current version from package.json
+const pkgPath = 'package.json'
+const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'))
+const currentVersion = pkg.version
+
+// Parse version
+const [major, minor, patch] = currentVersion.split('.').map(Number)
+
+// Calculate new version
+let newVersion
+if (versionType === 'major') {
+  newVersion = `${major + 1}.0.0`
+} else if (versionType === 'minor') {
+  newVersion = `${major}.${minor + 1}.0`
+} else if (versionType === 'patch') {
+  newVersion = `${major}.${minor}.${patch + 1}`
+}
+
+// Update package.json
+pkg.version = newVersion
+fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n')
+
+// Update tauri.conf.json
 const tauriConfigPath = 'src-tauri/tauri.conf.json'
 const tauriConfig = JSON.parse(fs.readFileSync(tauriConfigPath, 'utf8'))
-
-// Update version
-tauriConfig.version = version
-
-// Write back
+tauriConfig.version = newVersion
 fs.writeFileSync(tauriConfigPath, JSON.stringify(tauriConfig, null, 2) + '\n')
 
-console.log(`✓ Updated Tauri version to ${version}`)
-
-// Git add and commit
-try {
-  execSync(`git add ${tauriConfigPath}`, { stdio: 'inherit' })
-  execSync(`git commit -m "chore: sync tauri version to ${version}"`, { stdio: 'inherit' })
-  console.log('✓ Committed Tauri version update')
-} catch (error) {
-  // Ignore if nothing to commit
-  console.log('✓ No changes to commit', error)
-}
+console.log(`✓ Version bumped: ${currentVersion} → ${newVersion}`)
+console.log(`  - package.json: ${newVersion}`)
+console.log(`  - tauri.conf.json: ${newVersion}`)
