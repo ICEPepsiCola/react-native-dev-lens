@@ -8,7 +8,7 @@ on:
       - 'major-*'
 
 jobs:
-  release:
+  build:
     strategy:
       fail-fast: false
       matrix:
