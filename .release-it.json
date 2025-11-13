@@ -10,8 +10,7 @@
     "release": true,
     "releaseName": "v${version}",
     "assets": [
-      "src-tauri/target/release/bundle/dmg/*.dmg",
-      "src-tauri/target/release/bundle/macos/*.app.tar.gz"
+      "src-tauri/target/release/bundle/dmg/*.dmg"
     ]
   },
   "npm": {
