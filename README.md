@@ -34,7 +34,7 @@
    > **macOS Users**: If you see "App is damaged" error, run this command in Terminal:
    >
    > ```bash
-   > xattr -cr /Applications/dev-lens.app
+   > xattr -cr /Applications/com.cola.dev-lens
    > ```
 
 2. **Install SDK in your React Native project**

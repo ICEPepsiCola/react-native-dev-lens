@@ -29,17 +29,17 @@
    > **macOS 用户注意**: 如果遇到"应用已损坏"错误，在终端运行：
    >
    > ```bash
-   > xattr -cr /Applications/dev-lens.app
+   > xattr -cr /Applications/com.cola.dev-lens
    > ```
 
 2. **在你的 React Native 项目中安装 SDK**
 
    ```bash
-   npm install dev-lens-sdk
+   npm install react-native-dev-lens
    # 或
-   yarn add dev-lens-sdk
+   yarn add react-native-dev-lens
    # 或
-   pnpm add dev-lens-sdk
+   pnpm add react-native-dev-lens
    ```
 
 3. **在应用入口添加一行代码**（例如 `index.js` 或 `App.js`）
