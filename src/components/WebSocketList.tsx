@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import dayjs from 'dayjs'
 import { Emoji } from './Emoji'
 import { CopyButton } from './CopyButton'
 import { shouldTruncateText, truncateText, getHiddenStats } from '../utils/textTruncate'
@@ -67,15 +68,7 @@ export function WebSocketList({ requests }: WebSocketListProps) {
   }
 
   const formatTimestamp = (timestamp: number) => {
-    const date = new Date(timestamp)
-    const time = date.toLocaleTimeString('en-US', {
-      hour12: false,
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-    })
-    const ms = date.getMilliseconds().toString().padStart(3, '0')
-    return `${time}.${ms}`
+    return dayjs(timestamp).format('HH:mm:ss.SSS')
   }
 
   if (groupedSockets.length === 0) {
