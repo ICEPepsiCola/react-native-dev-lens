@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { CopyButton } from './CopyButton'
+import { CopyButton } from './copy-button'
 import type { NetworkRequest, DetailTab } from '../types'
 
 interface FetchXHRListProps {

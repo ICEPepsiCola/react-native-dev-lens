@@ -2,7 +2,7 @@ import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { debounce } from 'lodash-es'
 import toast from 'react-hot-toast'
-import { Emoji } from './Emoji'
+import { Emoji } from './emoji'
 
 interface CopyButtonProps {
   text: string;

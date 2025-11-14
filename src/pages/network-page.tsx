@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FetchXHRList } from '../components/FetchXHRList'
-import { WebSocketList } from '../components/WebSocketList'
+import { FetchXHRList } from '../components/fetch-xhr-list'
+import { WebSocketList } from '../components/web-socket-list'
 import type { NetworkRequest, FilterType } from '../types'
 
 interface NetworkPageProps {

@@ -1,5 +1,6 @@
 import stylistic from '@stylistic/eslint-plugin'
 import tseslint from 'typescript-eslint'
+import unicorn from 'eslint-plugin-unicorn'
 
 export default tseslint.config(
   {
@@ -9,8 +10,14 @@ export default tseslint.config(
   {
     plugins: {
       '@stylistic': stylistic,
+      'unicorn': unicorn,
     },
     rules: {
+      // File naming convention
+      'unicorn/filename-case': ['error', {
+        case: 'kebabCase',
+        ignore: ['^vite-env\\.d\\.ts$'],
+      }],
       // Stylistic rules
       '@stylistic/indent': ['error', 2],
       '@stylistic/quotes': ['error', 'single'],

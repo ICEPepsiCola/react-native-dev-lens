@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Emoji } from '@/components/Emoji'
-import { CopyButton } from '@/components/CopyButton'
+import { Emoji } from '@/components/emoji'
+import { CopyButton } from '@/components/copy-button'
 import type { ConsoleLog, LogLevelFilter } from '@/types'
 
 interface ConsolePageProps {

@@ -1,9 +1,9 @@
 import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
-import { Emoji } from './Emoji'
-import { CopyButton } from './CopyButton'
-import { shouldTruncateText, truncateText, getHiddenStats } from '../utils/textTruncate'
+import { Emoji } from './emoji'
+import { CopyButton } from './copy-button'
+import { shouldTruncateText, truncateText, getHiddenStats } from '../utils/text-truncate'
 import type { NetworkRequest, WebSocketMessage } from '../types'
 
 interface WebSocketListProps {

@@ -2,14 +2,14 @@ import { useState, useEffect } from 'react'
 import { listen } from '@tauri-apps/api/event'
 import { useTranslation } from 'react-i18next'
 import { Toaster } from 'react-hot-toast'
-import { Emoji } from './components/Emoji'
-import { NetworkPage } from './pages/NetworkPage'
-import { ConsolePage } from './pages/ConsolePage'
-import { usePreferencesStore } from './stores/usePreferencesStore'
+import { Emoji } from './components/emoji'
+import { NetworkPage } from './pages/network-page'
+import { ConsolePage } from './pages/console-page'
+import { usePreferencesStore } from './stores/use-preferences-store'
 import { THEME, LANGUAGE, TAB } from './constants'
 import type { NetworkRequest, ConsoleLog, WebSocketUpdate } from './types'
 
-import './App.css'
+import './app.css'
 
 function App() {
   const { t, i18n } = useTranslation()
