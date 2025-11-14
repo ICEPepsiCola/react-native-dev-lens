@@ -73,8 +73,13 @@ if (__DEV__) {
 
 ## 📦 What's Included
 
-- **Dev Lens App** - Desktop application (macOS/Windows/Linux)
+- **Dev Lens App** - Desktop application for macOS (Apple Silicon) and Windows
 - **react-native-dev-lens** - NPM package for easy integration
+
+## 💻 Supported Platforms
+
+- **macOS** - Apple Silicon
+- **Windows** - x64
 
 ## 🛠️ For Contributors
 
@@ -154,7 +159,7 @@ Dev Lens exposes the following HTTP endpoints:
 - **Zero Configuration** - Just one line of code to integrate
 - **Non-Intrusive** - Doesn't affect your app's performance
 - **Beautiful UI** - Modern design with dark/light theme
-- **Cross-Platform** - Works on macOS, Windows, and Linux
+- **Cross-Platform** - Works on macOS (Apple Silicon) and Windows
 - **Open Source** - Free and open source
 
 ## 📄 License

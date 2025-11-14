@@ -68,8 +68,13 @@ if (__DEV__) {
 
 ## 📦 包含内容
 
-- **Dev Lens 应用** - 桌面应用程序（macOS/Windows/Linux）
+- **Dev Lens 应用** - 桌面应用程序，支持 macOS (Apple Silicon) 和 Windows
 - **react-native-dev-lens** - NPM 包，方便集成
+
+## 💻 支持平台
+
+- **macOS** - Apple Silicon
+- **Windows** - x64
 
 ## 🛠️ 给贡献者
 
@@ -149,7 +154,7 @@ Dev Lens 暴露以下 HTTP 端点：
 - **零配置** - 只需一行代码即可集成
 - **无侵入** - 不影响应用性能
 - **界面美观** - 现代化设计，支持深色/浅色主题
-- **跨平台** - 支持 macOS、Windows 和 Linux
+- **跨平台** - 支持 macOS (Apple Silicon) 和 Windows
 - **开源免费** - MIT 协议
 
 ## 📄 许可证
