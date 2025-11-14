@@ -5,34 +5,35 @@ import { Toaster } from 'react-hot-toast'
 import { Emoji } from './components/Emoji'
 import { NetworkPage } from './pages/NetworkPage'
 import { ConsolePage } from './pages/ConsolePage'
+import { usePreferencesStore } from './stores/usePreferencesStore'
+import { THEME, LANGUAGE, TAB } from './constants'
 import type { NetworkRequest, ConsoleLog, WebSocketUpdate } from './types'
 
 import './App.css'
 
 function App() {
   const { t, i18n } = useTranslation()
-  const [theme, setTheme] = useState<'light' | 'dark'>('dark')
-  const [activeTab, setActiveTab] = useState('network')
+  const { theme, language, toggleTheme, toggleLanguage } = usePreferencesStore()
+  const [activeTab, setActiveTab] = useState<typeof TAB.NETWORK | typeof TAB.CONSOLE>(TAB.NETWORK)
   const [networkRequests, setNetworkRequests] = useState<NetworkRequest[]>([])
   const [consoleLogs, setConsoleLogs] = useState<ConsoleLog[]>([])
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
     // 为 Tailwind dark mode 添加 class
-    if (theme === 'dark') {
+    if (theme === THEME.DARK) {
       document.documentElement.classList.add('dark')
     } else {
       document.documentElement.classList.remove('dark')
     }
   }, [theme])
 
-  const toggleTheme = () => {
-    setTheme(prev => prev === 'light' ? 'dark' : 'light')
-  }
-
-  const toggleLanguage = () => {
-    i18n.changeLanguage(i18n.language === 'zh' ? 'en' : 'zh')
-  }
+  // 同步语言到 i18n
+  useEffect(() => {
+    if (i18n.language !== language) {
+      i18n.changeLanguage(language)
+    }
+  }, [language, i18n])
 
   useEffect(() => {
     const unlistenNetwork = listen<NetworkRequest>('network-log', event => {
@@ -96,7 +97,7 @@ function App() {
   }, [])
 
   const handleClear = () => {
-    if (activeTab === 'network') {
+    if (activeTab === TAB.NETWORK) {
       setNetworkRequests([])
     } else {
       setConsoleLogs([])
@@ -117,15 +118,15 @@ function App() {
           <div role="tablist" className="tabs tabs-boxed">
             <a
               role="tab"
-              className={`tab outline-none ${activeTab === 'network' ? 'tab-active' : ''}`}
-              onClick={() => setActiveTab('network')}
+              className={`tab outline-none ${activeTab === TAB.NETWORK ? 'tab-active' : ''}`}
+              onClick={() => setActiveTab(TAB.NETWORK)}
             >
               {t('network')}
             </a>
             <a
               role="tab"
-              className={`tab outline-none ${activeTab === 'console' ? 'tab-active' : ''}`}
-              onClick={() => setActiveTab('console')}
+              className={`tab outline-none ${activeTab === TAB.CONSOLE ? 'tab-active' : ''}`}
+              onClick={() => setActiveTab(TAB.CONSOLE)}
             >
               {t('console')}
             </a>
@@ -137,14 +138,14 @@ function App() {
             onClick={toggleTheme}
             title={t('theme')}
           >
-            {theme === 'light' ? <Emoji native="🌙" size={18} /> : <Emoji native="☀️" size={18} />}
+            {theme === THEME.LIGHT ? <Emoji native="🌙" size={18} /> : <Emoji native="☀️" size={18} />}
           </button>
           <button
             className="btn btn-ghost btn-sm outline-none"
             onClick={toggleLanguage}
             title={t('language')}
           >
-            {i18n.language === 'zh' ? 'EN' : '中'}
+            {language === LANGUAGE.ZH ? 'EN' : '中'}
           </button>
           <button
             className="btn btn-outline btn-sm outline-none hover:btn-error"
@@ -158,8 +159,8 @@ function App() {
 
       {/* Main Content */}
       <main className="grow p-4 overflow-y-auto">
-        {activeTab === 'network' && <NetworkPage networkRequests={networkRequests} />}
-        {activeTab === 'console' && <ConsolePage consoleLogs={consoleLogs} />}
+        {activeTab === TAB.NETWORK && <NetworkPage networkRequests={networkRequests} />}
+        {activeTab === TAB.CONSOLE && <ConsolePage consoleLogs={consoleLogs} />}
       </main>
 
       {/* Toast Notifications */}
