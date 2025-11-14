@@ -7,12 +7,7 @@
     "requireCleanWorkingDir": false
   },
   "github": {
-    "release": true,
-    "releaseName": "v${version}",
-    "assets": [
-      "src-tauri/target/release/bundle/dmg/*.dmg",
-      "src-tauri/target/release/bundle/msi/*.msi"
-    ]
+    "release": false
   },
   "npm": {
     "publish": true

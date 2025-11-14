@@ -16,11 +16,11 @@
 
 ## ✨ Features
 
-- � **国 Network Monitoring** - Real-time capture of HTTP requests and WebSocket connections
-- � **\*Detailed Information** - View request/response headers, body, CORS status, etc.
+- 🌐 **Network Monitoring** - Real-time capture of HTTP requests and WebSocket connections
+- 📊 **Detailed Information** - View request/response headers, body, CORS status, etc.
 - 🎨 **Theme Switching** - Support for dark/light mode with modern UI
 - 🌍 **Internationalization** - English/Chinese language support
-- � **Smart Filtering** - Filter by URL and request type
+- 🔍 **Smart Filtering** - Filter by URL and request type
 - 💻 **Console Logs** - Capture and display application logs (info/warn/error)
 
 ## 🚀 Quick Start

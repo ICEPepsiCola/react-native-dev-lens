@@ -8,17 +8,13 @@ on:
       - 'major-*'
 
 jobs:
-  build:
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - os: macos-latest
-            target: aarch64-apple-darwin
-          - os: windows-latest
-            target: x86_64-pc-windows-msvc
-    
-    runs-on: ${{ matrix.platform.os }}
+  release:
+    runs-on: macos-latest
+    permissions:
+      contents: write
+      packages: write
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
     
     steps:
       - uses: actions/checkout@v4
@@ -33,11 +29,6 @@ jobs:
         with:
           node-version: '22.x'
           registry-url: 'https://registry.npmjs.org'
-      
-      - name: Install Rust stable
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.platform.target }}
       
       - name: Install dependencies
         run: pnpm install
@@ -55,25 +46,47 @@ jobs:
             echo "type=major" >> $GITHUB_OUTPUT
           fi
       
+      - name: Checkout main branch
+        run: git checkout main
+      
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+      
       - name: Lint
         run: pnpm lint
       
-      - name: Sync version
-        run: node scripts/sync-tauri-version.js ${{ steps.version.outputs.type }}
+      - name: Run release-it (without GitHub release)
+        run: pnpm release-it ${{ steps.version.outputs.type }} --ci
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       
-      - name: Build Tauri app
-        run: pnpm tauri build
-  
-  release:
-    needs: build
-    runs-on: macos-latest
-    permissions:
-      contents: write
-      packages: write
+      - name: Get new version
+        id: get_version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "New version: $VERSION"
+
+  build:
+    needs: release
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - os: macos-latest
+            target: aarch64-apple-darwin
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+    
+    runs-on: ${{ matrix.platform.os }}
     
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: main
           fetch-depth: 0
       
       - uses: pnpm/action-setup@v2
@@ -83,26 +96,44 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22.x'
-          registry-url: 'https://registry.npmjs.org'
+      
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform.target }}
       
       - name: Install dependencies
         run: pnpm install
       
-      - name: Checkout main branch
-        run: git checkout main
+      - name: Build Tauri app
+        run: pnpm tauri build
       
-      - name: Configure Git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-      
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: tauri-${{ matrix.platform.os }}
+          path: |
+            src-tauri/target/release/bundle/dmg/*.dmg
+            src-tauri/target/release/bundle/msi/*.msi
+
+  upload:
+    needs: [release, build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
-          path: src-tauri/target/release/bundle
+          path: artifacts
       
-      - name: Run release-it
-        run: pnpm release-it ${{ steps.version.outputs.type }} --ci
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ needs.release.outputs.version }}
+          files: |
+            artifacts/**/*.dmg
+            artifacts/**/*.msi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
