@@ -1,14 +1,9 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native';
 import { useState } from 'react';
-import DevLens from 'react-native-dev-lens';
-
-const devLens = new DevLens({ enabled: true });
-devLens.init();
 
 export default function App() {
   const [logs, setLogs] = useState<string[]>([]);
-
   const addLog = (msg: string) => {
     setLogs(prev => [`[${new Date().toLocaleTimeString()}] ${msg}`, ...prev.slice(0, 9)]);
   };
@@ -19,6 +14,17 @@ export default function App() {
       const res = await fetch('https://jsonplaceholder.typicode.com/posts/1');
       const data = await res.json();
       addLog(`Fetch Success: ${data.title}`);
+    } catch (e: any) {
+      addLog(`Fetch Error: ${e.message}`);
+    }
+  };
+
+  const testFetchWithParams = async () => {
+    addLog('Testing Fetch with Query Params...');
+    try {
+      const res = await fetch('https://jsonplaceholder.typicode.com/posts?userId=1&_limit=3');
+      const data = await res.json();
+      addLog(`Fetch Success: ${data.length} posts`);
     } catch (e: any) {
       addLog(`Fetch Error: ${e.message}`);
     }
@@ -59,6 +65,24 @@ export default function App() {
     }
   };
 
+  const testCookie = async () => {
+    addLog('Testing Cookie...');
+    try {
+      // Set a test cookie (web only)
+      if (typeof document !== 'undefined') {
+        document.cookie = 'test_cookie=dev_lens_test; path=/';
+        document.cookie = 'user_id=12345; path=/';
+      }
+      
+      // Make a request to see cookies captured
+      const res = await fetch('https://jsonplaceholder.typicode.com/posts/1');
+      const data = await res.json();
+      addLog(`Cookie Test: ${data.title}`);
+    } catch (e: any) {
+      addLog(`Cookie Error: ${e.message}`);
+    }
+  };
+
   const testConsole = () => {
     addLog('Testing Console...');
     console.log('Log message');
@@ -75,11 +99,17 @@ export default function App() {
         <TouchableOpacity style={styles.button} onPress={testFetch}>
           <Text style={styles.buttonText}>Test Fetch (GET)</Text>
         </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={testFetchWithParams}>
+          <Text style={styles.buttonText}>Test Fetch (with params)</Text>
+        </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={testPost}>
           <Text style={styles.buttonText}>Test POST (with body)</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={testWebSocket}>
           <Text style={styles.buttonText}>Test WebSocket</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={testCookie}>
+          <Text style={styles.buttonText}>Test Cookie (web only)</Text>
         </TouchableOpacity>
         <TouchableOpacity style={[styles.button, styles.buttonSecondary]} onPress={testConsole}>
           <Text style={styles.buttonText}>Test Console</Text>

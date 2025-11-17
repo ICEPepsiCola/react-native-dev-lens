@@ -33,8 +33,10 @@ export function FetchXHRList({ requests }: FetchXHRListProps) {
     const detailTabs: { key: DetailTab; label: string }[] = [
       { key: 'General', label: t('general') },
       { key: 'Headers', label: t('headers') },
+      { key: 'Params', label: t('params') },
       { key: 'Request', label: t('request') },
       { key: 'Response', label: t('response') },
+      { key: 'Cookies', label: t('cookies') },
     ]
 
     return (
@@ -80,6 +82,26 @@ export function FetchXHRList({ requests }: FetchXHRListProps) {
               </div>
             </div>
           )}
+          {activeDetailTab === 'Params' && (
+            <div>
+              {req.query_params && Object.keys(req.query_params).length > 0 ? (
+                <div className="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-2 text-sm items-baseline">
+                  {Object.entries(req.query_params)
+                    .sort(([a], [b]) => a.toLowerCase().localeCompare(b.toLowerCase()))
+                    .map(([key, value]) => (
+                      <React.Fragment key={key}>
+                        <span className="font-semibold opacity-70 truncate">{key}:</span>
+                        <span className="break-all font-mono text-xs">{value}</span>
+                      </React.Fragment>
+                    ))}
+                </div>
+              ) : (
+                <div className="text-center py-4 text-sm opacity-50">
+                  {t('noQueryParams')}
+                </div>
+              )}
+            </div>
+          )}
           {activeDetailTab === 'Request' && (
             <div className="bg-base-300 rounded-lg p-4">
               {req.request_body ? (
@@ -109,6 +131,26 @@ export function FetchXHRList({ requests }: FetchXHRListProps) {
               <pre className="text-xs font-mono overflow-x-auto">
                 <code>{req.response_body ? JSON.stringify(JSON.parse(req.response_body), null, 2) : ''}</code>
               </pre>
+            </div>
+          )}
+          {activeDetailTab === 'Cookies' && (
+            <div>
+              {req.cookies && Object.keys(req.cookies).length > 0 ? (
+                <div className="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-2 text-sm items-baseline">
+                  {Object.entries(req.cookies)
+                    .sort(([a], [b]) => a.toLowerCase().localeCompare(b.toLowerCase()))
+                    .map(([key, value]) => (
+                      <React.Fragment key={key}>
+                        <span className="font-semibold opacity-70 truncate">{key}:</span>
+                        <span className="break-all font-mono text-xs">{value}</span>
+                      </React.Fragment>
+                    ))}
+                </div>
+              ) : (
+                <div className="text-center py-4 text-sm opacity-50">
+                  {t('noCookies')}
+                </div>
+              )}
             </div>
           )}
         </div>

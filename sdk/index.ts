@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-declare const global: any
+import qs from 'qs'
 
 const DEV_LENS_WS_URL = 'ws://127.0.0.1:3927/ws'
 
@@ -41,7 +41,6 @@ class DevLens {
       this.ws = new WebSocket(this.wsUrl)
 
       this.ws.onopen = () => {
-        console.log('Dev Lens: WebSocket connected')
         this.connecting = false
         this.reconnectDelay = 1000
 
@@ -51,12 +50,11 @@ class DevLens {
         }
       }
 
-      this.ws.onerror = error => {
-        console.warn('Dev Lens: WebSocket error', error)
+      this.ws.onerror = () => {
+        // Silent error handling
       }
 
       this.ws.onclose = () => {
-        console.log('Dev Lens: WebSocket closed, reconnecting...')
         this.connecting = false
         this.ws = null
 
@@ -85,8 +83,7 @@ class DevLens {
 
     try {
       this.ws.send(JSON.stringify(message))
-    } catch (error) {
-      console.warn('Dev Lens: Failed to send message', error)
+    } catch (_error) {
       this.messageQueue.push(message)
     }
   }
@@ -110,20 +107,47 @@ class DevLens {
 
     try {
       const self = this
-      const originalFetch = global.fetch
+      const originalFetch = globalThis.fetch
 
-      global.fetch = async function (...args: any[]) {
-        const [resource, config] = args
-        const url = typeof resource === 'string' ? resource : resource.url
+      globalThis.fetch = async function (input: RequestInfo | URL, init?: RequestInit) {
+        const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url
 
         if (url && url.includes('127.0.0.1:3927')) {
-          return originalFetch.apply(this, args)
+          return originalFetch(input, init)
         }
+
+        const config = init
 
         const requestId = Math.random().toString(36).substring(7)
         const startTime = Date.now()
         const method = config?.method || 'GET'
         const requestHeaders = config?.headers || {}
+
+        // Capture cookies
+        const cookies: Record<string, string> = {}
+        try {
+          if (typeof document !== 'undefined' && document.cookie) {
+            document.cookie.split(';').forEach(cookie => {
+              const [key, value] = cookie.trim().split('=')
+              if (key && value) {
+                cookies[key] = decodeURIComponent(value)
+              }
+            })
+          }
+        } catch (_e) {
+          // Cookie access might be restricted
+        }
+
+        // Parse query params using qs
+        let queryParams: Record<string, any> = {}
+        try {
+          const queryString = url.split('?')[1]
+          if (queryString) {
+            queryParams = qs.parse(queryString)
+          }
+        } catch (_e) {
+          // Invalid query string
+        }
 
         // Capture request body
         let requestBody = ''
@@ -144,7 +168,7 @@ class DevLens {
         }
 
         try {
-          const response = await originalFetch.apply(this, args)
+          const response = await originalFetch(input, init)
           const responseTime = Date.now() - startTime
 
           const clonedResponse = response.clone()
@@ -179,6 +203,8 @@ class DevLens {
               request: requestHeaders,
               response: responseHeaders,
             },
+            cookies,
+            query_params: queryParams,
             request_body: requestBody,
             response_body: responseBody,
             type: 'Fetch/XHR',
@@ -198,6 +224,8 @@ class DevLens {
               request: requestHeaders,
               response: {},
             },
+            cookies,
+            query_params: queryParams,
             request_body: requestBody,
             response_body: `Error: ${error.message}`,
             type: 'Fetch/XHR',
@@ -206,8 +234,8 @@ class DevLens {
           throw error
         }
       }
-    } catch (error) {
-      console.warn('Dev Lens: Failed to setup network interceptor', error)
+    } catch (_error) {
+      // Silent error handling
     }
   }
 
@@ -227,85 +255,84 @@ class DevLens {
     const self = this
     const OriginalWebSocket = WebSocket
 
-    global.WebSocket = function (url: string, protocols?: string | string[]) {
-      const ws = new OriginalWebSocket(url, protocols)
-      const wsId = Math.random().toString(36).substring(7)
-      const startTime = Date.now()
+    globalThis.WebSocket = class extends OriginalWebSocket {
+      constructor(url: string | URL, protocols?: string | string[]) {
+        super(url, protocols)
+        const ws = this
+        const wsId = Math.random().toString(36).substring(7)
+        const startTime = Date.now()
+        const urlString = typeof url === 'string' ? url : url.toString()
 
-      if (url && url.includes('127.0.0.1:3927')) {
-        return ws
-      }
+        if (urlString && urlString.includes('127.0.0.1:3927')) {
+          return
+        }
 
-      self.sendNetworkLog({
-        id: wsId,
-        method: 'WebSocket',
-        url: url,
-        status: 0,
-        response_time: 0,
-        headers: {
-          request: { Upgrade: 'websocket' },
-          response: {},
-        },
-        response_body: '',
-        type: 'Socket',
-        ws_state: 'connecting',
-        ws_messages: [],
-      })
-
-      ws.addEventListener('open', () => {
-        const responseTime = Date.now() - startTime
-        self.sendWebSocketUpdate(wsId, {
-          state: 'open',
-          status: 101,
-          response_time: responseTime,
-        })
-      })
-
-      const originalSend = ws.send.bind(ws)
-      ws.send = function (data: any) {
-        self.sendWebSocketUpdate(wsId, {
-          message: {
-            id: `${wsId}-${Date.now()}`,
-            direction: 'send',
-            data: typeof data === 'string' ? data : '[Binary Data]',
-            timestamp: Date.now(),
+        self.sendNetworkLog({
+          id: wsId,
+          method: 'WebSocket',
+          url: urlString,
+          status: 0,
+          response_time: 0,
+          headers: {
+            request: { Upgrade: 'websocket' },
+            response: {},
           },
+          response_body: '',
+          type: 'Socket',
+          ws_state: 'connecting',
+          ws_messages: [],
         })
-        return originalSend(data)
+
+        ws.addEventListener('open', () => {
+          const responseTime = Date.now() - startTime
+          self.sendWebSocketUpdate(wsId, {
+            state: 'open',
+            status: 101,
+            response_time: responseTime,
+          })
+        })
+
+        const originalSend = ws.send.bind(ws)
+        ws.send = function (data: any) {
+          self.sendWebSocketUpdate(wsId, {
+            message: {
+              id: `${wsId}-${Date.now()}`,
+              direction: 'send',
+              data: typeof data === 'string' ? data : '[Binary Data]',
+              timestamp: Date.now(),
+            },
+          })
+          return originalSend(data)
+        }
+
+        ws.addEventListener('message', (event: MessageEvent) => {
+          self.sendWebSocketUpdate(wsId, {
+            message: {
+              id: `${wsId}-${Date.now()}`,
+              direction: 'receive',
+              data: typeof event.data === 'string' ? event.data : '[Binary Data]',
+              timestamp: Date.now(),
+            },
+          })
+        })
+
+        ws.addEventListener('error', () => {
+          self.sendWebSocketUpdate(wsId, {
+            state: 'error',
+            error: 'WebSocket error',
+          })
+        })
+
+        ws.addEventListener('close', (event: CloseEvent) => {
+          self.sendWebSocketUpdate(wsId, {
+            state: 'closed',
+            status: event.code,
+            close_reason: event.reason || 'No reason',
+            response_time: Date.now() - startTime,
+          })
+        })
       }
-
-      ws.addEventListener('message', (event: MessageEvent) => {
-        self.sendWebSocketUpdate(wsId, {
-          message: {
-            id: `${wsId}-${Date.now()}`,
-            direction: 'receive',
-            data: typeof event.data === 'string' ? event.data : '[Binary Data]',
-            timestamp: Date.now(),
-          },
-        })
-      })
-
-      ws.addEventListener('error', () => {
-        self.sendWebSocketUpdate(wsId, {
-          state: 'error',
-          error: 'WebSocket error',
-        })
-      })
-
-      ws.addEventListener('close', (event: CloseEvent) => {
-        self.sendWebSocketUpdate(wsId, {
-          state: 'closed',
-          status: event.code,
-          close_reason: event.reason || 'No reason',
-          response_time: Date.now() - startTime,
-        })
-      })
-
-      return ws
     }
-
-    Object.setPrototypeOf(global.WebSocket, OriginalWebSocket)
-    global.WebSocket.prototype = OriginalWebSocket.prototype
   }
 
   interceptConsole(): void {

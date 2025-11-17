@@ -17,6 +17,8 @@ export interface NetworkRequest {
     request: Record<string, string>;
     response: Record<string, string>;
   };
+  cookies?: Record<string, string>;
+  query_params?: Record<string, string>;
   request_body?: string;
   response_body: string;
   type: RequestType;
@@ -30,7 +32,7 @@ export interface ConsoleLog {
   message: string;
 }
 
-export type DetailTab = 'General' | 'Headers' | 'Request' | 'Response'
+export type DetailTab = 'General' | 'Headers' | 'Params' | 'Request' | 'Response' | 'Cookies'
 export type FilterType = 'All' | RequestType
 export type LogLevelFilter = 'all' | 'info' | 'warn' | 'error'
 

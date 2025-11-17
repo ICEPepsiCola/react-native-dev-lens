@@ -29,6 +29,10 @@ struct NetworkRequest {
     response_time: u64,
     headers: NetworkHeaders,
     #[serde(skip_serializing_if = "Option::is_none")]
+    cookies: Option<HashMap<String, String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    query_params: Option<HashMap<String, String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     request_body: Option<String>,
     response_body: String,
     #[serde(rename = "type")]
