@@ -13,6 +13,7 @@
 
 - **Root** - Tauri desktop application
 - **sdk/** - React Native SDK (published to NPM as `react-native-dev-lens`)
+- **example/** - Example React Native app for testing
 
 ## ✨ Features
 
@@ -112,10 +113,13 @@ dev-lens/
 │   └── assets/            # Static assets
 ├── src-tauri/             # Tauri backend
 │   ├── src/
-│   │   └── lib.rs         # Rust backend with HTTP server
+│   │   └── lib.rs         # Rust backend with WebSocket server
 │   └── icons/             # Application icons
 ├── sdk/                   # SDK for integration
-│   └── react-native-dev-lens/      # NPM package
+│   └── index.js           # NPM package source
+├── example/               # Example React Native app
+│   ├── App.tsx            # Test app with demo buttons
+│   └── README.md          # Example app documentation
 └── public/                # Public assets
 ```
 
@@ -124,16 +128,16 @@ dev-lens/
 - **Frontend**: React 19 + TypeScript
 - **Desktop Framework**: Tauri 2.0
 - **UI Components**: DaisyUI + Tailwind CSS
-- **Backend**: Rust + Axum (HTTP server on port 9527)
+- **Backend**: Rust + Axum (WebSocket server on port 3927)
 - **Internationalization**: i18next + react-i18next
 - **Build Tool**: Vite
 
 ## 📡 How It Works
 
-1. Dev Lens app starts an HTTP server on `http://127.0.0.1:9527`
+1. Dev Lens app starts a WebSocket server on `ws://127.0.0.1:3927/ws`
 2. The SDK uses React Native's official `XHRInterceptor` to capture network requests
 3. The SDK intercepts console logs (log, warn, error, info)
-4. The SDK sends data to Dev Lens via HTTP POST requests
+4. The SDK sends data to Dev Lens via WebSocket connection (with auto-reconnect)
 5. Dev Lens displays the data in real-time with a beautiful UI
 
 **Note:** For physical devices, you'll need to use your computer's IP address instead of `127.0.0.1`
@@ -147,12 +151,15 @@ dev-lens/
 - Check CORS configuration
 - Inspect request/response timing
 
-## 📝 API Endpoints
+## 📝 WebSocket Protocol
 
-Dev Lens exposes the following HTTP endpoints:
+Dev Lens uses WebSocket for real-time communication:
 
-- `POST http://127.0.0.1:9527/api/network` - Receive network logs
-- `POST http://127.0.0.1:9527/api/console` - Receive console logs
+- **Endpoint**: `ws://127.0.0.1:3927/ws`
+- **Message Format**: JSON with `type` field
+  - `type: "network"` - Network request logs
+  - `type: "console"` - Console logs
+  - `type: "websocket-update"` - WebSocket connection updates
 
 ## 🌟 Why Dev Lens?
 
@@ -169,6 +176,12 @@ MIT License
 ## 🤝 Contributing
 
 Issues and Pull Requests are welcome!
+
+## 📚 Documentation
+
+- [Development Guide](DEVELOPMENT.md) - Complete guide for contributors
+- [Example App README](example/README.md) - How to run the example app
+- [WebSocket Migration](WEBSOCKET_MIGRATION.md) - Migration from HTTP to WebSocket
 
 ## 🔗 Links
 

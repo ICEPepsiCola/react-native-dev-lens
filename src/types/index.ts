@@ -17,7 +17,8 @@ export interface NetworkRequest {
     request: Record<string, string>;
     response: Record<string, string>;
   };
-  response: string;
+  request_body?: string;
+  response_body: string;
   type: RequestType;
   // WebSocket specific fields
   ws_state?: 'connecting' | 'open' | 'closing' | 'closed' | 'error';
@@ -29,7 +30,7 @@ export interface ConsoleLog {
   message: string;
 }
 
-export type DetailTab = 'General' | 'Headers' | 'Response'
+export type DetailTab = 'General' | 'Headers' | 'Request' | 'Response'
 export type FilterType = 'All' | RequestType
 export type LogLevelFilter = 'all' | 'info' | 'warn' | 'error'
 

@@ -119,13 +119,13 @@ dev-lens/
 - **前端**: React 19 + TypeScript
 - **桌面框架**: Tauri 2.0
 - **UI 组件**: DaisyUI + Tailwind CSS
-- **后端**: Rust + Axum（HTTP 服务器，端口 9527）
+- **后端**: Rust + Axum（WebSocket 服务器，端口 3927）
 - **国际化**: i18next + react-i18next
 - **构建工具**: Vite
 
 ## 📡 工作原理
 
-1. Dev Lens 应用启动一个 HTTP 服务器在 `http://127.0.0.1:9527`
+1. Dev Lens 应用启动一个 WebSocket 服务器在 `ws://127.0.0.1:3927/ws`
 2. SDK 使用 React Native 官方的 `XHRInterceptor` 捕获网络请求
 3. SDK 拦截控制台日志（log、warn、error、info）
 4. SDK 通过 HTTP POST 请求将数据发送到 Dev Lens
@@ -144,10 +144,13 @@ dev-lens/
 
 ## 📝 API 端点
 
-Dev Lens 暴露以下 HTTP 端点：
+Dev Lens 使用 WebSocket 进行实时通信：
 
-- `POST http://127.0.0.1:9527/api/network` - 接收网络日志
-- `POST http://127.0.0.1:9527/api/console` - 接收控制台日志
+- **端点**: `ws://127.0.0.1:3927/ws`
+- **消息格式**: JSON，包含 `type` 字段
+  - `type: "network"` - 网络请求日志
+  - `type: "console"` - 控制台日志
+  - `type: "websocket-update"` - WebSocket 连接更新
 
 ## 🌟 为什么选择 Dev Lens？
 

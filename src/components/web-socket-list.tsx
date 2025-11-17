@@ -92,11 +92,11 @@ export function WebSocketList({ requests }: WebSocketListProps) {
               className="flex items-center gap-3 p-4 hover-bg cursor-pointer transition-colors"
             >
               <Emoji native={isExpanded ? '▼' : '▶'} size={12} class="shrink-0" />
-              <span className="badge badge-primary shrink-0">WS</span>
+              <span className="badge badge-primary shrink-0 w-[80px] justify-center">WS</span>
               <span className="font-mono text-sm flex-1 truncate" title={group.url}>
                 {group.url}
               </span>
-              <span className="badge badge-outline badge-sm shrink-0">
+              <span className="badge badge-outline badge-sm shrink-0 w-[80px] justify-center">
                 {group.allMessages.length}
               </span>
             </div>

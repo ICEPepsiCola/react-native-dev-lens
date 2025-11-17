@@ -1,10 +1,11 @@
 import stylistic from '@stylistic/eslint-plugin'
-import tseslint from 'typescript-eslint'
+import tseslint from  'typescript-eslint'
 import unicorn from 'eslint-plugin-unicorn'
+import { defineConfig } from "eslint/config";
 
-export default tseslint.config(
+export default defineConfig(
   {
-    ignores: ['dist', 'node_modules', 'src-tauri/target', '*.config.js', '*.config.ts', 'packages/*/dist'],
+    ignores: ['dist', 'node_modules', 'src-tauri/target', '*.config.js', '*.config.ts', 'packages/*/dist', 'example/**'],
   },
   ...tseslint.configs.recommended,
   {

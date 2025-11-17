@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Emoji } from './emoji'
 import { CopyButton } from './copy-button'
 import type { NetworkRequest, DetailTab } from '@/types'
 
@@ -32,6 +33,7 @@ export function FetchXHRList({ requests }: FetchXHRListProps) {
     const detailTabs: { key: DetailTab; label: string }[] = [
       { key: 'General', label: t('general') },
       { key: 'Headers', label: t('headers') },
+      { key: 'Request', label: t('request') },
       { key: 'Response', label: t('response') },
     ]
 
@@ -78,16 +80,34 @@ export function FetchXHRList({ requests }: FetchXHRListProps) {
               </div>
             </div>
           )}
+          {activeDetailTab === 'Request' && (
+            <div className="bg-base-300 rounded-lg p-4">
+              {req.request_body ? (
+                <>
+                  <div className="flex justify-end mb-2">
+                    <CopyButton text={req.request_body} size="sm" />
+                  </div>
+                  <pre className="text-xs font-mono overflow-x-auto">
+                    <code>{req.request_body}</code>
+                  </pre>
+                </>
+              ) : (
+                <div className="text-center py-4 text-sm opacity-50">
+                  {t('noRequestBody')}
+                </div>
+              )}
+            </div>
+          )}
           {activeDetailTab === 'Response' && (
             <div className="bg-base-300 rounded-lg p-4">
               <div className="flex justify-end mb-2">
                 <CopyButton
-                  text={req.response ? JSON.stringify(JSON.parse(req.response), null, 2) : ''}
+                  text={req.response_body ? JSON.stringify(JSON.parse(req.response_body), null, 2) : ''}
                   size="sm"
                 />
               </div>
               <pre className="text-xs font-mono overflow-x-auto">
-                <code>{req.response ? JSON.stringify(JSON.parse(req.response), null, 2) : ''}</code>
+                <code>{req.response_body ? JSON.stringify(JSON.parse(req.response_body), null, 2) : ''}</code>
               </pre>
             </div>
           )}
@@ -119,22 +139,30 @@ export function FetchXHRList({ requests }: FetchXHRListProps) {
 
   return (
     <div>
-      {requests.map(req => (
-        <div key={req.id} className="border-b border-base-300 last:border-b-0">
-          <div
-            onClick={() => toggleRequestDetails(req.id)}
-            className="grid grid-cols-[100px_1fr_80px_100px] items-center p-4 hover-bg cursor-pointer transition-colors"
-          >
-            <span className="badge badge-primary font-mono">{req.method}</span>
-            <span className="truncate text-sm">{req.url}</span>
-            <span className={`badge ${req.status >= 400 ? 'badge-error' : 'badge-success'} font-bold`}>
-              {req.status}
-            </span>
-            <span className="font-mono text-sm text-right opacity-70">{req.response_time}ms</span>
+      {requests.map(req => {
+        const isExpanded = expandedRequestId === req.id
+
+        return (
+          <div key={req.id} className="border-b border-base-300 last:border-b-0">
+            {/* 手风琴头部 */}
+            <div
+              onClick={() => toggleRequestDetails(req.id)}
+              className="flex items-center gap-3 p-4 hover-bg cursor-pointer transition-colors"
+            >
+              <Emoji native={isExpanded ? '▼' : '▶'} size={12} class="shrink-0" />
+              <span className="badge badge-primary font-mono shrink-0 w-[80px] justify-center">{req.method}</span>
+              <span className="truncate text-sm flex-1">{req.url}</span>
+              <span className={`badge ${req.status >= 400 ? 'badge-error' : 'badge-success'} font-bold shrink-0`}>
+                {req.status}
+              </span>
+              <span className="font-mono text-sm opacity-70 shrink-0 w-[80px] text-right">{req.response_time}ms</span>
+            </div>
+
+            {/* 手风琴内容 */}
+            {isExpanded && renderDetailView(req)}
           </div>
-          {expandedRequestId === req.id && renderDetailView(req)}
-        </div>
-      ))}
+        )
+      })}
     </div>
   )
 }

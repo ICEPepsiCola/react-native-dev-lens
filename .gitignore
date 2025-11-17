@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Example app
+example/node_modules
+example/ios/Pods
+example/ios/build
+example/android/build
+example/android/.gradle
+example/.gradle

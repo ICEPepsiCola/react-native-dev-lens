@@ -3,8 +3,8 @@
   "version": "0.0.7",
   "description": "Network and Console monitoring tool for React Native - Desktop App & SDK",
   "type": "module",
-  "main": "sdk/index.js",
-  "types": "sdk/index.d.ts",
+  "main": "sdk/index.ts",
+  "types": "sdk/index.ts",
   "keywords": [
     "react-native",
     "debugging",
@@ -26,8 +26,7 @@
   },
   "homepage": "https://github.com/ICEPepsiCola/react-native-dev-lens#readme",
   "files": [
-    "sdk/index.js",
-    "sdk/index.d.ts",
+    "sdk/index.ts",
     "sdk/README.md"
   ],
   "publishConfig": {

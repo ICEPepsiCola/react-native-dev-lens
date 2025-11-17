@@ -79,9 +79,9 @@ function App() {
 
         // Update error or close reason
         if (update.error) {
-          wsRequest.response = `Error: ${update.error}`
+          wsRequest.response_body = `Error: ${update.error}`
         } else if (update.close_reason) {
-          wsRequest.response = `Closed: ${update.close_reason}`
+          wsRequest.response_body = `Closed: ${update.close_reason}`
         }
 
         updated[index] = wsRequest

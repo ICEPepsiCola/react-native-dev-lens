@@ -1,0 +1,39 @@
+# 发布到 NPM 时忽略的文件
+
+# 源代码（只发布 sdk/ 目录）
+src/
+src-tauri/
+example/
+public/
+scripts/
+
+# 配置文件
+.github/
+.husky/
+.vscode/
+*.config.js
+*.config.ts
+tsconfig*.json
+vite.config.ts
+eslint.config.js
+.release-it.json
+pnpm-workspace.yaml
+
+# 文档（保留 SDK 的 README）
+README.md
+README.zh-CN.md
+DEVELOPMENT.md
+WEBSOCKET_MIGRATION.md
+CHANGELOG.md
+
+# 构建产物
+dist/
+dist-ssr/
+node_modules/
+
+# 其他
+.DS_Store
+*.log
+.git/
+.gitignore
+index.html

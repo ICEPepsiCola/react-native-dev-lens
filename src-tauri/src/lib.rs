@@ -2,13 +2,15 @@ use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Emitter};
 use std::collections::HashMap;
 use axum::{
-    extract::{State, Path},
-    http::StatusCode,
-    routing::post,
-    Json, Router,
+    extract::{ws::WebSocketUpgrade, State},
+    response::IntoResponse,
+    routing::get,
+    Router,
 };
+use axum::extract::ws::{WebSocket, Message};
 use tower_http::cors::{CorsLayer, Any};
 use std::sync::Arc;
+use futures::{sink::SinkExt, stream::StreamExt};
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 struct WebSocketMessage {
@@ -26,7 +28,9 @@ struct NetworkRequest {
     status: u16,
     response_time: u64,
     headers: NetworkHeaders,
-    response: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    request_body: Option<String>,
+    response_body: String,
     #[serde(rename = "type")]
     request_type: String,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -68,78 +72,105 @@ struct AppState {
     app_handle: AppHandle,
 }
 
-async fn handle_network_log(
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(tag = "type")]
+enum ClientMessage {
+    #[serde(rename = "network")]
+    Network { data: NetworkRequest },
+    #[serde(rename = "console")]
+    Console { data: ConsoleLog },
+    #[serde(rename = "websocket-update")]
+    WebSocketUpdate { ws_id: String, data: WebSocketUpdate },
+}
+
+async fn handle_websocket(
+    ws: WebSocketUpgrade,
     State(state): State<Arc<AppState>>,
-    Json(request): Json<NetworkRequest>,
-) -> StatusCode {
-    match state.app_handle.emit("network-log", &request) {
-        Ok(_) => StatusCode::OK,
-        Err(e) => {
-            eprintln!("Failed to emit network-log: {}", e);
-            StatusCode::INTERNAL_SERVER_ERROR
+) -> impl IntoResponse {
+    ws.on_upgrade(|socket| handle_socket(socket, state))
+}
+
+async fn handle_socket(socket: WebSocket, state: Arc<AppState>) {
+    let (mut sender, mut receiver) = socket.split();
+    
+    println!("WebSocket client connected");
+
+    while let Some(msg) = receiver.next().await {
+        match msg {
+            Ok(Message::Text(text)) => {
+                // 解析消息
+                match serde_json::from_str::<ClientMessage>(&text) {
+                    Ok(client_msg) => {
+                        match client_msg {
+                            ClientMessage::Network { data } => {
+                                if let Err(e) = state.app_handle.emit("network-log", &data) {
+                                    eprintln!("Failed to emit network-log: {}", e);
+                                }
+                            }
+                            ClientMessage::Console { data } => {
+                                if let Err(e) = state.app_handle.emit("console-log", &data) {
+                                    eprintln!("Failed to emit console-log: {}", e);
+                                }
+                            }
+                            ClientMessage::WebSocketUpdate { ws_id, data } => {
+                                #[derive(Serialize)]
+                                struct WebSocketUpdateEvent {
+                                    ws_id: String,
+                                    update: WebSocketUpdate,
+                                }
+                                
+                                let event = WebSocketUpdateEvent {
+                                    ws_id,
+                                    update: data,
+                                };
+                                
+                                if let Err(e) = state.app_handle.emit("websocket-update", &event) {
+                                    eprintln!("Failed to emit websocket-update: {}", e);
+                                }
+                            }
+                        }
+                        
+                        // 发送确认消息
+                        if let Err(e) = sender.send(Message::Text(r#"{"status":"ok"}"#.to_string())).await {
+                            eprintln!("Failed to send ack: {}", e);
+                            break;
+                        }
+                    }
+                    Err(e) => {
+                        eprintln!("Failed to parse message: {}", e);
+                    }
+                }
+            }
+            Ok(Message::Close(_)) => {
+                println!("WebSocket client disconnected");
+                break;
+            }
+            Err(e) => {
+                eprintln!("WebSocket error: {}", e);
+                break;
+            }
+            _ => {}
         }
     }
 }
 
-async fn handle_console_log(
-    State(state): State<Arc<AppState>>,
-    Json(log): Json<ConsoleLog>,
-) -> StatusCode {
-    match state.app_handle.emit("console-log", &log) {
-        Ok(_) => StatusCode::OK,
-        Err(e) => {
-            eprintln!("Failed to emit console-log: {}", e);
-            StatusCode::INTERNAL_SERVER_ERROR
-        }
-    }
-}
-
-async fn handle_websocket_update(
-    State(state): State<Arc<AppState>>,
-    Path(ws_id): Path<String>,
-    Json(update): Json<WebSocketUpdate>,
-) -> StatusCode {
-    println!("Received WebSocket update for {}: {:?}", ws_id, update);
-    
-    #[derive(Serialize)]
-    struct WebSocketUpdateEvent {
-        ws_id: String,
-        update: WebSocketUpdate,
-    }
-    
-    let event = WebSocketUpdateEvent {
-        ws_id,
-        update,
-    };
-    
-    match state.app_handle.emit("websocket-update", &event) {
-        Ok(_) => StatusCode::OK,
-        Err(e) => {
-            eprintln!("Failed to emit websocket-update: {}", e);
-            StatusCode::INTERNAL_SERVER_ERROR
-        }
-    }
-}
-
-async fn start_http_server(app_handle: AppHandle) {
+async fn start_websocket_server(app_handle: AppHandle) {
     let state = Arc::new(AppState { app_handle });
 
     let app = Router::new()
-        .route("/api/network", post(handle_network_log))
-        .route("/api/console", post(handle_console_log))
-        .route("/api/websocket/:ws_id", post(handle_websocket_update))
+        .route("/ws", get(handle_websocket))
         .layer(CorsLayer::new().allow_origin(Any).allow_methods(Any).allow_headers(Any))
         .with_state(state);
 
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:9527")
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:3927")
         .await
-        .expect("Failed to bind to port 9527");
+        .expect("Failed to bind to port 3927");
 
-    println!("Dev Lens HTTP server listening on http://127.0.0.1:9527");
+    println!("Dev Lens WebSocket server listening on ws://127.0.0.1:3927/ws");
 
     axum::serve(listener, app)
         .await
-        .expect("Failed to start HTTP server");
+        .expect("Failed to start WebSocket server");
 }
 
 #[tauri::command]
@@ -165,7 +196,7 @@ pub fn run() {
         .setup(|app| {
             let app_handle = app.handle().clone();
             tauri::async_runtime::spawn(async move {
-                start_http_server(app_handle).await;
+                start_websocket_server(app_handle).await;
             });
             Ok(())
         })
