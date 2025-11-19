@@ -59,6 +59,7 @@
     "qs": "^6.14.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-error-boundary": "^6.0.0",
     "react-hot-toast": "^2.6.0",
     "react-i18next": "^16.2.4",
     "zustand": "^5.0.8"
