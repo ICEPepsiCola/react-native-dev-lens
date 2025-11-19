@@ -12,11 +12,18 @@
 ## ✨ 特性
 
 - 🌐 **网络监控** - 实时捕获 HTTP 请求和 WebSocket 连接
-- 📊 **详细信息** - 查看请求/响应头、响应体、CORS 状态等
+- 📊 **详细信息** - 查看请求/响应头、响应体、查询参数、Cookies 等
 - 🎨 **主题切换** - 支持深色/浅色模式，界面美观现代
 - 🌍 **国际化** - 支持中文/英文切换
 - 🔍 **智能过滤** - 按 URL、请求类型过滤
 - 💻 **控制台日志** - 捕获和展示应用日志（info/warn/error）
+
+## 📸 截图
+
+<div align="center">
+  <img src="https://raw.githubusercontent.com/ICEPepsiCola/react-native-dev-lens/main/public/screenshot-zh.png" alt="Dev Lens 截图" width="800">
+  <p><em>Dev Lens 实际效果 - 网络监控与详细请求信息</em></p>
+</div>
 
 ## 🚀 快速开始
 

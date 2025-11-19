@@ -18,11 +18,18 @@
 ## ✨ Features
 
 - 🌐 **Network Monitoring** - Real-time capture of HTTP requests and WebSocket connections
-- 📊 **Detailed Information** - View request/response headers, body, CORS status, etc.
+- 📊 **Detailed Information** - View request/response headers, body, query params, cookies, etc.
 - 🎨 **Theme Switching** - Support for dark/light mode with modern UI
 - 🌍 **Internationalization** - English/Chinese language support
 - 🔍 **Smart Filtering** - Filter by URL and request type
 - 💻 **Console Logs** - Capture and display application logs (info/warn/error)
+
+## 📸 Screenshots
+
+<div align="center">
+  <img src="https://raw.githubusercontent.com/ICEPepsiCola/react-native-dev-lens/main/public/screenshot-en.png" alt="Dev Lens Screenshot" width="800">
+  <p><em>Dev Lens in action - Network monitoring with detailed request information</em></p>
+</div>
 
 ## 🚀 Quick Start
 
