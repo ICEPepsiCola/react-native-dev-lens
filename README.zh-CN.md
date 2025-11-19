@@ -71,6 +71,13 @@ import DevLens from "react-native-dev-lens";
 if (__DEV__) {
   new DevLens().init();
 }
+
+// 真机调试时，指定电脑的 IP 地址
+const devLens = new DevLens({
+  enabled: __DEV__,
+  wsUrl: "ws://192.168.1.100:3927/ws", // 替换为你电脑的 IP
+});
+devLens.init();
 ```
 
 ## 📦 包含内容
@@ -104,6 +111,35 @@ pnpm tauri dev
 pnpm tauri build
 ```
 
+### 测试示例应用
+
+我们提供了完整的 React Native 示例应用用于测试。项目使用 **pnpm workspace** 方便 SDK 开发：
+
+```bash
+# 1. 安装所有依赖（包括示例应用）
+pnpm install
+
+# 2. 安装 iOS pods（仅 iOS）
+cd example/ios && pod install && cd ../..
+
+# 3. 启动 Dev Lens 桌面应用
+pnpm tauri dev
+
+# 4. 在另一个终端运行示例应用
+pnpm --filter example ios
+# 或
+pnpm --filter example android
+```
+
+**pnpm workspace 的优势：**
+
+- ✅ SDK 修改立即在示例应用中生效
+- ✅ 无需 `npm link` 或手动复制
+- ✅ 跨包共享依赖
+- ✅ 快速迭代和调试
+
+详见 [example/README.md](example/README.md)。
+
 ### 项目结构
 
 ```
@@ -132,13 +168,19 @@ dev-lens/
 
 ## 📡 工作原理
 
-1. Dev Lens 应用启动一个 WebSocket 服务器在 `ws://127.0.0.1:3927/ws`
-2. SDK 使用 React Native 官方的 `XHRInterceptor` 捕获网络请求
+1. Dev Lens 应用启动一个 WebSocket 服务器在 `0.0.0.0:3927`（可从网络访问）
+2. SDK 拦截 `fetch` 请求和 WebSocket 连接
 3. SDK 拦截控制台日志（log、warn、error、info）
-4. SDK 通过 HTTP POST 请求将数据发送到 Dev Lens
+4. SDK 通过 WebSocket 连接将数据发送到 Dev Lens（支持自动重连）
 5. Dev Lens 实时展示数据，界面美观
 
-**注意：** 真机调试时，需要使用电脑的 IP 地址而不是 `127.0.0.1`
+**连接选项：**
+
+- **本地/模拟器**: `ws://127.0.0.1:3927/ws`（默认）
+- **真机**: `ws://你的电脑IP:3927/ws`（例如 `ws://192.168.1.100:3927/ws`）
+- **Android 模拟器**: `ws://10.0.2.2:3927/ws`
+
+服务器监听所有网络接口，可以从同一网络的任何设备连接。
 
 ## 🎯 使用场景
 
@@ -149,7 +191,7 @@ dev-lens/
 - 检查 CORS 配置
 - 查看请求/响应时间
 
-## 📝 API 端点
+## 📝 WebSocket 协议
 
 Dev Lens 使用 WebSocket 进行实时通信：
 
@@ -174,6 +216,12 @@ MIT License
 ## 🤝 贡献
 
 欢迎提交 Issue 和 Pull Request！
+
+## 📚 文档
+
+- [开发指南](DEVELOPMENT.md) - 贡献者完整指南
+- [示例应用 README](example/README.md) - 如何运行示例应用
+- [WebSocket 迁移](WEBSOCKET_MIGRATION.md) - 从 HTTP 到 WebSocket 的迁移
 
 ## 🔗 链接
 

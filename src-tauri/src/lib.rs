@@ -166,11 +166,19 @@ async fn start_websocket_server(app_handle: AppHandle) {
         .layer(CorsLayer::new().allow_origin(Any).allow_methods(Any).allow_headers(Any))
         .with_state(state);
 
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:3927")
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:3927")
         .await
         .expect("Failed to bind to port 3927");
 
-    println!("Dev Lens WebSocket server listening on ws://127.0.0.1:3927/ws");
+    println!("Dev Lens WebSocket server listening on ws://0.0.0.0:3927/ws");
+    println!("Local access: ws://127.0.0.1:3927/ws");
+    
+    // Try to get local IP address
+    if let Ok(hostname) = hostname::get() {
+        if let Some(hostname_str) = hostname.to_str() {
+            println!("Network access: ws://{}:3927/ws (or use your IP address)", hostname_str);
+        }
+    }
 
     axum::serve(listener, app)
         .await

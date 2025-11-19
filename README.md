@@ -77,6 +77,13 @@ import DevLens from "react-native-dev-lens";
 if (__DEV__) {
   new DevLens().init();
 }
+
+// For physical devices, specify your computer's IP address
+const devLens = new DevLens({
+  enabled: __DEV__,
+  wsUrl: "ws://192.168.1.100:3927/ws", // Replace with your computer's IP
+});
+devLens.init();
 ```
 
 ## 📦 What's Included
@@ -141,13 +148,19 @@ dev-lens/
 
 ## 📡 How It Works
 
-1. Dev Lens app starts a WebSocket server on `ws://127.0.0.1:3927/ws`
-2. The SDK uses React Native's official `XHRInterceptor` to capture network requests
+1. Dev Lens app starts a WebSocket server on `0.0.0.0:3927` (accessible from network)
+2. The SDK intercepts `fetch` requests and WebSocket connections
 3. The SDK intercepts console logs (log, warn, error, info)
 4. The SDK sends data to Dev Lens via WebSocket connection (with auto-reconnect)
 5. Dev Lens displays the data in real-time with a beautiful UI
 
-**Note:** For physical devices, you'll need to use your computer's IP address instead of `127.0.0.1`
+**Connection Options:**
+
+- **Local/Simulator**: `ws://127.0.0.1:3927/ws` (default)
+- **Physical Device**: `ws://YOUR_COMPUTER_IP:3927/ws` (e.g., `ws://192.168.1.100:3927/ws`)
+- **Android Emulator**: `ws://10.0.2.2:3927/ws`
+
+The server listens on all network interfaces, so you can connect from any device on the same network.
 
 ## 🎯 Use Cases
 
@@ -183,12 +196,6 @@ MIT License
 ## 🤝 Contributing
 
 Issues and Pull Requests are welcome!
-
-## 📚 Documentation
-
-- [Development Guide](DEVELOPMENT.md) - Complete guide for contributors
-- [Example App README](example/README.md) - How to run the example app
-- [WebSocket Migration](WEBSOCKET_MIGRATION.md) - Migration from HTTP to WebSocket
 
 ## 🔗 Links
 

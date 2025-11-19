@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import qs from 'qs'
 
-const DEV_LENS_WS_URL = 'ws://127.0.0.1:3927/ws'
+const DEFAULT_WS_URL = 'ws://127.0.0.1:3927/ws'
 
 interface DevLensOptions {
   enabled?: boolean
+  wsUrl?: string
 }
 
 class DevLens {
@@ -17,7 +18,7 @@ class DevLens {
   private maxReconnectDelay: number
 
   constructor(options: DevLensOptions = {}) {
-    this.wsUrl = DEV_LENS_WS_URL
+    this.wsUrl = options.wsUrl || DEFAULT_WS_URL
     this.enabled = options.enabled !== false
     this.ws = null
     this.messageQueue = []
