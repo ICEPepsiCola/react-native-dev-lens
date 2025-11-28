@@ -30,3 +30,5 @@ example/ios/build
 example/android/build
 example/android/.gradle
 example/.gradle
+
+.cola

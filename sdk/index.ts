@@ -347,39 +347,24 @@ class DevLens {
       info: console.info,
     }
 
-    const formatArgs = (args: any[]) => {
-      return args
-        .map(arg => {
-          if (typeof arg === 'object') {
-            try {
-              return JSON.stringify(arg, null, 2)
-            } catch (_e) {
-              return String(arg)
-            }
-          }
-          return String(arg)
-        })
-        .join(' ')
-    }
-
     console.log = function (...args: any[]) {
       originalConsole.log(...args)
-      self.sendConsoleLog({ level: 'info', message: formatArgs(args) })
+      self.sendConsoleLog({ level: 'log', args })
     }
 
     console.info = function (...args: any[]) {
       originalConsole.info(...args)
-      self.sendConsoleLog({ level: 'info', message: formatArgs(args) })
+      self.sendConsoleLog({ level: 'info', args })
     }
 
     console.warn = function (...args: any[]) {
       originalConsole.warn(...args)
-      self.sendConsoleLog({ level: 'warn', message: formatArgs(args) })
+      self.sendConsoleLog({ level: 'warn', args })
     }
 
     console.error = function (...args: any[]) {
       originalConsole.error(...args)
-      self.sendConsoleLog({ level: 'error', message: formatArgs(args) })
+      self.sendConsoleLog({ level: 'error', args })
     }
   }
 

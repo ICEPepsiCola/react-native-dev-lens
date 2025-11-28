@@ -52,7 +52,7 @@ struct NetworkHeaders {
 #[derive(Debug, Deserialize, Serialize, Clone)]
 struct ConsoleLog {
     level: String,
-    message: String,
+    args: Vec<serde_json::Value>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]

@@ -28,8 +28,8 @@ export interface NetworkRequest {
 }
 
 export interface ConsoleLog {
-  level: string;
-  message: string;
+  level: 'log' | 'info' | 'warn' | 'error';
+  args: unknown[];
 }
 
 export type DetailTab = 'General' | 'Headers' | 'Params' | 'Request' | 'Response' | 'Cookies'

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Emoji } from '@/components/emoji'
 import { CopyButton } from '@/components/copy-button'
+import { ConsoleLogViewer } from '@/components/console-log-viewer'
 import type { ConsoleLog, LogLevelFilter } from '@/types'
 
 interface ConsolePageProps {
@@ -10,7 +10,6 @@ interface ConsolePageProps {
 
 export function ConsolePage({ consoleLogs }: ConsolePageProps) {
   const { t } = useTranslation()
-  const [expandedLogIndices, setExpandedLogIndices] = useState<Set<number>>(new Set())
   const [logLevelFilter, setLogLevelFilter] = useState<LogLevelFilter>('all')
   const [logMessageFilter, setLogMessageFilter] = useState<string>('')
 
@@ -18,10 +17,13 @@ export function ConsolePage({ consoleLogs }: ConsolePageProps) {
     .map((log, index) => ({ log, index }))
     .filter(({ log }) => {
       const levelMatch = logLevelFilter === 'all' || log.level === logLevelFilter
-      const messageMatch = log.message.toLowerCase().includes(logMessageFilter.toLowerCase())
+      // Search in all args
+      const argsText = log.args.map(arg =>
+        typeof arg === 'object' ? JSON.stringify(arg) : String(arg),
+      ).join(' ')
+      const messageMatch = argsText.toLowerCase().includes(logMessageFilter.toLowerCase())
       return levelMatch && messageMatch
     })
-
   return (
     <div className="flex flex-col h-full gap-4">
       {/* Console Filters */}
@@ -57,23 +59,15 @@ export function ConsolePage({ consoleLogs }: ConsolePageProps) {
           ) : (
             <div>
               {filteredLogs.map(({ log, index }) => {
-                const isExpanded = expandedLogIndices.has(index)
-                const lines = log.message.split('\n')
-                const shouldTruncate = lines.length > 3
-                const displayMessage = !isExpanded && shouldTruncate
-                  ? lines.slice(0, 4).join('\n')
-                  : log.message
+                // Generate copy text from args
+                const copyText = log.args.map(arg =>
+                  typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg),
+                ).join(' ')
 
                 return (
                   <div
                     key={index}
-                    className={`p-4 border-b border-base-300 last:border-b-0 ${
-                      log.level === 'error'
-                        ? 'log-error-bg'
-                        : log.level === 'warn'
-                          ? 'log-warn-bg'
-                          : ''
-                    }`}
+                    className="p-4 border-b border-base-300 last:border-b-0"
                   >
                     <div className="flex items-start gap-2">
                       <span
@@ -89,35 +83,9 @@ export function ConsolePage({ consoleLogs }: ConsolePageProps) {
                       </span>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-2">
-                          {shouldTruncate && (
-                            <button
-                              className="btn btn-ghost btn-xs outline-none flex items-center gap-1"
-                              onClick={() => {
-                                const newExpanded = new Set(expandedLogIndices)
-                                if (isExpanded) {
-                                  newExpanded.delete(index)
-                                } else {
-                                  newExpanded.add(index)
-                                }
-                                setExpandedLogIndices(newExpanded)
-                              }}
-                            >
-                              {isExpanded ? (
-                                <>
-                                  <Emoji native="▲" size={12} /> {t('showLess')}
-                                </>
-                              ) : (
-                                <>
-                                  <Emoji native="▼" size={12} /> {t('showMore')} ({lines.length - 3} {t('moreLines')})
-                                </>
-                              )}
-                            </button>
-                          )}
-                          <CopyButton text={log.message} />
+                          <CopyButton text={copyText} />
                         </div>
-                        <pre className="font-mono text-sm whitespace-pre-wrap break-all m-0">
-                          {displayMessage}
-                        </pre>
+                        <ConsoleLogViewer args={log.args} />
                       </div>
                     </div>
                   </div>

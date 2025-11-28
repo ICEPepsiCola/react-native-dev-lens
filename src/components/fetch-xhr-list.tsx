@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Emoji } from './emoji'
 import { CopyButton } from './copy-button'
+import { RequestViewer } from './request-viewer'
+import { ResponseViewer } from './response-viewer'
 import type { NetworkRequest, DetailTab } from '@/types'
 
 interface FetchXHRListProps {
@@ -103,35 +105,10 @@ export function FetchXHRList({ requests }: FetchXHRListProps) {
             </div>
           )}
           {activeDetailTab === 'Request' && (
-            <div className="bg-base-300 rounded-lg p-4">
-              {req.request_body ? (
-                <>
-                  <div className="flex justify-end mb-2">
-                    <CopyButton text={req.request_body} size="sm" />
-                  </div>
-                  <pre className="text-xs font-mono overflow-x-auto">
-                    <code>{req.request_body}</code>
-                  </pre>
-                </>
-              ) : (
-                <div className="text-center py-4 text-sm opacity-50">
-                  {t('noRequestBody')}
-                </div>
-              )}
-            </div>
+            <RequestViewer content={req.request_body} />
           )}
           {activeDetailTab === 'Response' && (
-            <div className="bg-base-300 rounded-lg p-4">
-              <div className="flex justify-end mb-2">
-                <CopyButton
-                  text={req.response_body ? JSON.stringify(JSON.parse(req.response_body), null, 2) : ''}
-                  size="sm"
-                />
-              </div>
-              <pre className="text-xs font-mono overflow-x-auto">
-                <code>{req.response_body ? JSON.stringify(JSON.parse(req.response_body), null, 2) : ''}</code>
-              </pre>
-            </div>
+            <ResponseViewer content={req.response_body} />
           )}
           {activeDetailTab === 'Cookies' && (
             <div>
