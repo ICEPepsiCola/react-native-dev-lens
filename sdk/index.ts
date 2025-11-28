@@ -103,6 +103,79 @@ class DevLens {
     })
   }
 
+  private async extractRequestConfig(input: RequestInfo | URL, init?: RequestInit) {
+    // Extract URL
+    let url: string
+    if (typeof input === 'string') {
+      url = input
+    } else if (input instanceof URL) {
+      url = input.toString()
+    } else if (input instanceof Request) {
+      url = input.url
+    } else {
+      url = ''
+    }
+
+    // Get Request object if input is Request
+    const requestObj = input instanceof Request ? input : null
+
+    // Extract method: init > Request > 'GET'
+    const method = init?.method || requestObj?.method || 'GET'
+
+    // Extract headers: Request first, then init overrides
+    const headers: Record<string, string> = {}
+
+    if (requestObj) {
+      requestObj.headers.forEach((value: string, key: string) => {
+        headers[key] = value
+      })
+    }
+
+    if (init?.headers) {
+      const initHeaders = init.headers
+      if (initHeaders instanceof Headers) {
+        initHeaders.forEach((value: string, key: string) => {
+          headers[key] = value
+        })
+      } else if (Array.isArray(initHeaders)) {
+        initHeaders.forEach(([key, value]) => {
+          headers[key] = value
+        })
+      } else {
+        Object.entries(initHeaders).forEach(([key, value]) => {
+          headers[key] = value
+        })
+      }
+    }
+
+    // Extract body: init > Request
+    let body = ''
+    const bodySource = init?.body || (requestObj && !requestObj.bodyUsed ? requestObj : null)
+
+    if (bodySource) {
+      try {
+        if (bodySource instanceof Request) {
+          const cloned = bodySource.clone()
+          body = await cloned.text()
+        } else if (typeof bodySource === 'string') {
+          body = bodySource
+        } else if (bodySource instanceof FormData) {
+          body = '[FormData]'
+        } else if (bodySource instanceof Blob) {
+          body = '[Blob]'
+        } else if (bodySource instanceof ArrayBuffer || bodySource instanceof Uint8Array) {
+          body = '[Binary Data]'
+        } else {
+          body = JSON.stringify(bodySource)
+        }
+      } catch (_e) {
+        body = '[Unable to serialize body]'
+      }
+    }
+
+    return { url, method, headers, body }
+  }
+
   interceptNetwork(): void {
     if (!this.enabled) return
 
@@ -111,18 +184,15 @@ class DevLens {
       const originalFetch = globalThis.fetch
 
       globalThis.fetch = async function (input: RequestInfo | URL, init?: RequestInit) {
-        const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url
+        // Extract request config
+        const config = await self.extractRequestConfig(input, init)
 
-        if (url && url.includes('127.0.0.1:3927')) {
+        if (config.url && config.url.includes('127.0.0.1:3927')) {
           return originalFetch(input, init)
         }
 
-        const config = init
-
         const requestId = Math.random().toString(36).substring(7)
         const startTime = Date.now()
-        const method = config?.method || 'GET'
-        const requestHeaders = config?.headers || {}
 
         // Capture cookies
         const cookies: Record<string, string> = {}
@@ -142,30 +212,12 @@ class DevLens {
         // Parse query params using qs
         let queryParams: Record<string, any> = {}
         try {
-          const queryString = url.split('?')[1]
+          const queryString = config.url.split('?')[1]
           if (queryString) {
             queryParams = qs.parse(queryString)
           }
         } catch (_e) {
           // Invalid query string
-        }
-
-        // Capture request body
-        let requestBody = ''
-        if (config?.body) {
-          try {
-            if (typeof config.body === 'string') {
-              requestBody = config.body
-            } else if (config.body instanceof FormData) {
-              requestBody = '[FormData]'
-            } else if (config.body instanceof Blob) {
-              requestBody = '[Blob]'
-            } else {
-              requestBody = JSON.stringify(config.body)
-            }
-          } catch (_e) {
-            requestBody = '[Unable to serialize body]'
-          }
         }
 
         try {
@@ -196,17 +248,17 @@ class DevLens {
 
           self.sendNetworkLog({
             id: requestId,
-            method,
-            url,
+            method: config.method,
+            url: config.url,
             status: response.status,
             response_time: responseTime,
             headers: {
-              request: requestHeaders,
+              request: config.headers,
               response: responseHeaders,
             },
             cookies,
             query_params: queryParams,
-            request_body: requestBody,
+            request_body: config.body,
             response_body: responseBody,
             type: 'Fetch/XHR',
           })
@@ -217,17 +269,17 @@ class DevLens {
 
           self.sendNetworkLog({
             id: requestId,
-            method,
-            url,
+            method: config.method,
+            url: config.url,
             status: 0,
             response_time: responseTime,
             headers: {
-              request: requestHeaders,
+              request: config.headers,
               response: {},
             },
             cookies,
             query_params: queryParams,
-            request_body: requestBody,
+            request_body: config.body,
             response_body: `Error: ${error.message}`,
             type: 'Fetch/XHR',
           })
