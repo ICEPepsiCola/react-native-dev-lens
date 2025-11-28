@@ -1,5 +1,7 @@
 # Changelog
 
+## [0.0.12](https://github.com/ICEPepsiCola/react-native-dev-lens/compare/patch-20251128-1530...0.0.12) (2025-11-28)
+
 ## [0.0.11](https://github.com/ICEPepsiCola/react-native-dev-lens/compare/patch-20251128-1023...0.0.11) (2025-11-28)
 
 ## [0.0.10](https://github.com/ICEPepsiCola/react-native-dev-lens/compare/patch-20251119-1852...0.0.10) (2025-11-20)
