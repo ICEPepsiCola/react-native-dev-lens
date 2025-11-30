@@ -3,6 +3,7 @@ import { listen } from '@tauri-apps/api/event'
 import { useTranslation } from 'react-i18next'
 import { Toaster } from 'react-hot-toast'
 import { Emoji } from '@/components/emoji'
+import { DevStatusBar } from '@/components/dev-status-bar'
 import { NetworkPage } from '@/pages/network-page'
 import { ConsolePage } from '@/pages/console-page'
 import { usePreferencesStore } from '@/stores/use-preferences-store'
@@ -158,10 +159,13 @@ function App() {
       </div>
 
       {/* Main Content */}
-      <main className="grow p-4 overflow-y-auto">
+      <main className="flex-1 p-4 overflow-hidden">
         {activeTab === TAB.NETWORK && <NetworkPage networkRequests={networkRequests} />}
         {activeTab === TAB.CONSOLE && <ConsolePage consoleLogs={consoleLogs} />}
       </main>
+
+      {/* Dev Status Bar */}
+      <DevStatusBar networkCount={networkRequests.length} consoleCount={consoleLogs.length} />
 
       {/* Toast Notifications */}
       <Toaster />

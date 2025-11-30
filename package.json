@@ -49,8 +49,10 @@
     "@emoji-mart/data": "^1.2.1",
     "@emoji-mart/react": "^1.1.1",
     "@tailwindcss/vite": "^4.1.17",
+    "@tanstack/react-virtual": "^3.13.12",
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-opener": "^2",
+    "@textea/json-viewer": "^4.0.1",
     "dayjs": "^1.11.19",
     "emoji-mart": "^5.6.0",
     "framer-motion": "^12.23.24",
@@ -62,7 +64,6 @@
     "react-error-boundary": "^6.0.0",
     "react-hot-toast": "^2.6.0",
     "react-i18next": "^16.2.4",
-    "react-json-view": "^1.21.3",
     "zustand": "^5.0.8"
   },
   "devDependencies": {

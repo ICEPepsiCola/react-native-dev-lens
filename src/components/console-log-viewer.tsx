@@ -1,14 +1,14 @@
-import ReactJson from 'react-json-view'
-import { usePreferencesStore } from '@/stores/use-preferences-store'
-import { THEME } from '@/constants'
+import { memo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { JsonViewer } from '@textea/json-viewer'
 
 interface ConsoleLogViewerProps {
   args: unknown[]
+  theme: 'dark' | 'light'
 }
 
-export function ConsoleLogViewer({ args }: ConsoleLogViewerProps) {
-  const { theme } = usePreferencesStore()
-
+export const ConsoleLogViewer = memo(({ args, theme }: ConsoleLogViewerProps) => {
+  const { t } = useTranslation()
   if (!args || args.length === 0) {
     return null
   }
@@ -16,25 +16,12 @@ export function ConsoleLogViewer({ args }: ConsoleLogViewerProps) {
   return (
     <div className="flex flex-col gap-2">
       {args.map((arg, index) => {
-        // Check if arg is an object (not string, number, boolean, null)
         const isObject = typeof arg === 'object' && arg !== null
 
         return (
           <div key={index}>
             {isObject ? (
-              <ReactJson
-                src={arg}
-                theme={theme === THEME.DARK ? 'monokai' : 'rjv-default'}
-                collapsed={2}
-                displayDataTypes={false}
-                displayObjectSize={false}
-                enableClipboard={false}
-                name={false}
-                style={{
-                  backgroundColor: 'transparent',
-                  fontSize: '12px',
-                }}
-              />
+              <JsonObjectViewer value={arg} theme={theme} t={t} />
             ) : (
               <pre className="font-mono text-sm whitespace-pre-wrap break-all m-0">
                 {String(arg)}
@@ -45,4 +32,47 @@ export function ConsoleLogViewer({ args }: ConsoleLogViewerProps) {
       })}
     </div>
   )
-}
+})
+
+const JsonObjectViewer = memo(({ value, theme, t }: { value: unknown; theme: 'dark' | 'light'; t: (key: string) => string }) => {
+  const [expanded, setExpanded] = useState(false)
+
+  if (!expanded) {
+    const label = Array.isArray(value)
+      ? `[${t('array')}(${value.length})]`
+      : `{${t('object')}}`
+
+    return (
+      <button
+        onClick={() => setExpanded(true)}
+        className="text-xs font-mono text-primary hover:underline cursor-pointer text-left"
+      >
+        {label} ▶ {t('clickToExpand')}
+      </button>
+    )
+  }
+
+  return (
+    <div>
+      <button
+        onClick={() => setExpanded(false)}
+        className="text-xs font-mono text-primary hover:underline cursor-pointer mb-1"
+      >
+        ▼ {t('clickToCollapse')}
+      </button>
+      <JsonViewer
+        value={value}
+        theme={theme}
+        defaultInspectDepth={1}
+        displayDataTypes={false}
+        displaySize={false}
+        enableClipboard={false}
+        rootName={false}
+        style={{
+          backgroundColor: 'transparent',
+          fontSize: '12px',
+        }}
+      />
+    </div>
+  )
+})

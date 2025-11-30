@@ -1,4 +1,4 @@
-import ReactJson from 'react-json-view'
+import { JsonViewer as TexteaJsonViewer } from '@textea/json-viewer'
 import { CopyButton } from './copy-button'
 import { usePreferencesStore } from '@/stores/use-preferences-store'
 import { THEME } from '@/constants'
@@ -17,7 +17,7 @@ function isValidJson(str: string): boolean {
   }
 }
 
-export function JsonViewer({ content, emptyMessage = 'No content' }: JsonViewerProps) {
+export function JsonViewer({ content, emptyMessage }: JsonViewerProps) {
   const { theme } = usePreferencesStore()
 
   if (!content) {
@@ -38,16 +38,17 @@ export function JsonViewer({ content, emptyMessage = 'No content' }: JsonViewerP
         <CopyButton text={isJson ? JSON.stringify(JSON.parse(content), null, 2) : content} size="sm" />
       </div>
       {isJson ? (
-        <ReactJson
-          src={JSON.parse(content)}
-          theme={theme === THEME.DARK ? 'monokai' : 'rjv-default'}
-          collapsed={2}
+        <TexteaJsonViewer
+          value={JSON.parse(content)}
+          theme={theme === THEME.DARK ? 'dark' : 'light'}
+          defaultInspectDepth={2}
           displayDataTypes={false}
-          displayObjectSize={false}
+          displaySize={false}
           enableClipboard={false}
-          name={false}
+          rootName={false}
           style={{
             backgroundColor: 'transparent',
+            fontSize: '12px',
           }}
         />
       ) : (
