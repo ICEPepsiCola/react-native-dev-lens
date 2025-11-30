@@ -133,6 +133,42 @@ export default function App() {
     }
   };
 
+  const testStress = async () => {
+    addLog('Starting stress test: 1000 requests + 1000 console logs...');
+    
+    // Generate 1000 console logs
+    for (let i = 0; i < 1000; i++) {
+      if (i % 3 === 0) {
+        console.log(`Log ${i}:`, {
+          index: i,
+          timestamp: Date.now(),
+          data: { value: Math.random(), nested: { deep: 'value' } }
+        });
+      } else if (i % 3 === 1) {
+        console.warn(`Warning ${i}: This is a warning message`);
+      } else {
+        console.error(`Error ${i}: This is an error message`);
+      }
+    }
+    
+    // Generate 1000 fetch requests
+    const promises = [];
+    for (let i = 0; i < 1000; i++) {
+      const promise = fetch(`https://jsonplaceholder.typicode.com/posts/${(i % 100) + 1}`)
+        .catch(() => {});
+      promises.push(promise);
+      
+      // Batch requests to avoid overwhelming the browser
+      if (i % 50 === 0) {
+        await Promise.all(promises);
+        promises.length = 0;
+      }
+    }
+    
+    await Promise.all(promises);
+    addLog('Stress test completed!');
+  };
+
   const testConsole = () => {
     addLog('Testing Console...');
     
@@ -253,6 +289,9 @@ export default function App() {
         <TouchableOpacity style={[styles.button, styles.buttonSecondary]} onPress={testConsole}>
           <Text style={styles.buttonText}>Test Console</Text>
         </TouchableOpacity>
+        <TouchableOpacity style={[styles.button, styles.buttonDanger]} onPress={testStress}>
+          <Text style={styles.buttonText}>🔥 Stress Test (1000 each)</Text>
+        </TouchableOpacity>
       </View>
 
       <View style={styles.logs}>
@@ -298,6 +337,9 @@ const styles = StyleSheet.create({
   },
   buttonSecondary: {
     backgroundColor: '#5856D6',
+  },
+  buttonDanger: {
+    backgroundColor: '#FF3B30',
   },
   buttonText: {
     color: '#fff',

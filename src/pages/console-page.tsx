@@ -69,7 +69,7 @@ export function ConsolePage({ consoleLogs }: ConsolePageProps) {
     count: filteredLogs.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 150,
-    overscan: 5,
+    overscan: 10,
     measureElement: element => element.getBoundingClientRect().height,
   })
 

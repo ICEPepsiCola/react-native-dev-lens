@@ -1,10 +1,8 @@
-import React, { useState } from 'react'
+import { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Emoji } from './emoji'
-import { CopyButton } from './copy-button'
-import { RequestViewer } from './request-viewer'
-import { ResponseViewer } from './response-viewer'
-import type { NetworkRequest, DetailTab } from '@/types'
+import { useVirtualizer } from '@tanstack/react-virtual'
+import { FetchXHRItem } from './fetch-xhr-item'
+import type { NetworkRequest } from '@/types'
 
 interface FetchXHRListProps {
   requests: NetworkRequest[];
@@ -12,141 +10,15 @@ interface FetchXHRListProps {
 
 export function FetchXHRList({ requests }: FetchXHRListProps) {
   const { t } = useTranslation()
-  const [expandedRequestId, setExpandedRequestId] = useState<string | null>(null)
-  const [activeDetailTab, setActiveDetailTab] = useState<DetailTab>('General')
+  const parentRef = useRef<HTMLDivElement>(null)
 
-  const toHeaderCase = (str: string): string => {
-    return str
-      .split('-')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join('-')
-  }
-
-  const toggleRequestDetails = (id: string) => {
-    if (expandedRequestId === id) {
-      setExpandedRequestId(null)
-    } else {
-      setExpandedRequestId(id)
-      setActiveDetailTab('General')
-    }
-  }
-
-  const renderDetailView = (req: NetworkRequest) => {
-    const detailTabs: { key: DetailTab; label: string }[] = [
-      { key: 'General', label: t('general') },
-      { key: 'Headers', label: t('headers') },
-      { key: 'Params', label: t('params') },
-      { key: 'Request', label: t('request') },
-      { key: 'Response', label: t('response') },
-      { key: 'Cookies', label: t('cookies') },
-    ]
-
-    return (
-      <div className="p-4 bg-base-200">
-        <div role="tablist" className="tabs tabs-bordered">
-          {detailTabs.map(tab => (
-            <a
-              key={tab.key}
-              role="tab"
-              className={`tab outline-none ${activeDetailTab === tab.key ? 'tab-active' : ''}`}
-              onClick={() => setActiveDetailTab(tab.key)}
-            >
-              {tab.label}
-            </a>
-          ))}
-        </div>
-        <div className="mt-4">
-          {activeDetailTab === 'General' && (
-            <div className="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-2 text-sm items-center">
-              <span className="font-semibold opacity-70">{t('requestUrl')}:</span>
-              <div className="flex items-center gap-2">
-                <span className="font-mono text-sm break-all">{req.url}</span>
-                <CopyButton text={req.url} showText={false} size="xs" className="shrink-0" />
-              </div>
-              <span className="font-semibold opacity-70">{t('requestMethod')}:</span>
-              <span className="badge badge-primary">{req.method}</span>
-              <span className="font-semibold opacity-70">{t('statusCode')}:</span>
-              <span className={`badge ${req.status >= 400 ? 'badge-error' : 'badge-success'}`}>{req.status}</span>
-              <span className="font-semibold opacity-70">{t('type')}:</span>
-              <span className="badge badge-outline">{req.type}</span>
-            </div>
-          )}
-          {activeDetailTab === 'Headers' && (
-            <div className="space-y-6">
-              <div>
-                <h3 className="text-sm font-bold mb-3 opacity-70">{t('requestHeaders')}</h3>
-                {renderHeaders(req.headers.request)}
-              </div>
-              <div className="divider my-4"></div>
-              <div>
-                <h3 className="text-sm font-bold mb-3 opacity-70">{t('responseHeaders')}</h3>
-                {renderHeaders(req.headers.response)}
-              </div>
-            </div>
-          )}
-          {activeDetailTab === 'Params' && (
-            <div>
-              {req.query_params && Object.keys(req.query_params).length > 0 ? (
-                <div className="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-2 text-sm items-baseline">
-                  {Object.entries(req.query_params)
-                    .sort(([a], [b]) => a.toLowerCase().localeCompare(b.toLowerCase()))
-                    .map(([key, value]) => (
-                      <React.Fragment key={key}>
-                        <span className="font-semibold opacity-70 truncate">{key}:</span>
-                        <span className="break-all font-mono text-xs">{value}</span>
-                      </React.Fragment>
-                    ))}
-                </div>
-              ) : (
-                <div className="text-center py-4 text-sm opacity-50">
-                  {t('noQueryParams')}
-                </div>
-              )}
-            </div>
-          )}
-          {activeDetailTab === 'Request' && (
-            <RequestViewer content={req.request_body} />
-          )}
-          {activeDetailTab === 'Response' && (
-            <ResponseViewer content={req.response_body} />
-          )}
-          {activeDetailTab === 'Cookies' && (
-            <div>
-              {req.cookies && Object.keys(req.cookies).length > 0 ? (
-                <div className="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-2 text-sm items-baseline">
-                  {Object.entries(req.cookies)
-                    .sort(([a], [b]) => a.toLowerCase().localeCompare(b.toLowerCase()))
-                    .map(([key, value]) => (
-                      <React.Fragment key={key}>
-                        <span className="font-semibold opacity-70 truncate">{key}:</span>
-                        <span className="break-all font-mono text-xs">{value}</span>
-                      </React.Fragment>
-                    ))}
-                </div>
-              ) : (
-                <div className="text-center py-4 text-sm opacity-50">
-                  {t('noCookies')}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-    )
-  }
-
-  const renderHeaders = (headers: Record<string, string>) => (
-    <div className="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-2 text-sm items-baseline">
-      {Object.entries(headers)
-        .sort(([a], [b]) => a.toLowerCase().localeCompare(b.toLowerCase()))
-        .map(([key, value]) => (
-          <React.Fragment key={key}>
-            <span className="font-semibold opacity-70 truncate">{toHeaderCase(key)}:</span>
-            <span className="break-all font-mono text-xs">{value}</span>
-          </React.Fragment>
-        ))}
-    </div>
-  )
+  const virtualizer = useVirtualizer({
+    count: requests.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 60,
+    overscan: 10,
+    measureElement: element => element.getBoundingClientRect().height,
+  })
 
   if (requests.length === 0) {
     return (
@@ -157,31 +29,35 @@ export function FetchXHRList({ requests }: FetchXHRListProps) {
   }
 
   return (
-    <div>
-      {requests.map(req => {
-        const isExpanded = expandedRequestId === req.id
+    <div ref={parentRef} className="h-full overflow-auto">
+      <div
+        style={{
+          height: `${virtualizer.getTotalSize()}px`,
+          width: '100%',
+          position: 'relative',
+        }}
+      >
+        {virtualizer.getVirtualItems().map(virtualItem => {
+          const req = requests[virtualItem.index]
 
-        return (
-          <div key={req.id} className="border-b border-base-300 last:border-b-0">
-            {/* 手风琴头部 */}
+          return (
             <div
-              onClick={() => toggleRequestDetails(req.id)}
-              className="flex items-center gap-3 p-4 hover-bg cursor-pointer transition-colors"
+              key={virtualItem.key}
+              data-index={virtualItem.index}
+              ref={virtualizer.measureElement}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                transform: `translateY(${virtualItem.start}px)`,
+              }}
             >
-              <Emoji native={isExpanded ? '▼' : '▶'} size={12} class="shrink-0" />
-              <span className="badge badge-primary font-mono shrink-0 w-[80px] justify-center">{req.method}</span>
-              <span className="truncate text-sm flex-1">{req.url}</span>
-              <span className={`badge ${req.status >= 400 ? 'badge-error' : 'badge-success'} font-bold shrink-0`}>
-                {req.status}
-              </span>
-              <span className="font-mono text-sm opacity-70 shrink-0 w-[80px] text-right">{req.response_time}ms</span>
+              <FetchXHRItem request={req} />
             </div>
-
-            {/* 手风琴内容 */}
-            {isExpanded && renderDetailView(req)}
-          </div>
-        )
-      })}
+          )
+        })}
+      </div>
     </div>
   )
 }
