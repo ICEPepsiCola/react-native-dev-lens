@@ -96,3 +96,7 @@ a:focus,
   outline: none !important;
   box-shadow: none !important;
 }
+
+em-emoji img {
+  display: block!important;
+}

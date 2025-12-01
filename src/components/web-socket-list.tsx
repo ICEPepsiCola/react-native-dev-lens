@@ -140,7 +140,7 @@ export function WebSocketList({ requests, standalone = true }: WebSocketListProp
                       <div className="flex items-center gap-2 flex-1 min-w-0">
                         <span className="text-sm opacity-70">{t('url')}:</span>
                         <span className="font-mono text-xs truncate flex-1">{group.url}</span>
-                        <CopyButton text={group.url} showText={false} size="xs" />
+                        <CopyButton text={group.url} size="xs" />
                       </div>
                       <span className="text-sm opacity-70 shrink-0 ml-4">
                         {group.allMessages.length} {t('messages')}
@@ -204,7 +204,7 @@ export function WebSocketList({ requests, standalone = true }: WebSocketListProp
                               </div>
 
                               {/* 复制按钮 */}
-                              <CopyButton text={msg.data} showText={false} size="xs" className="shrink-0 mt-1" />
+                              <CopyButton text={msg.data} size="xs" className="shrink-0 mt-1" />
                             </div>
                           )
                         })}

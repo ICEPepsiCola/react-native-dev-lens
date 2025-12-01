@@ -105,6 +105,10 @@ function App() {
     }
   }
 
+  const handleRefresh = () => {
+    window.location.reload()
+  }
+
   return (
     <div className="flex flex-col h-screen bg-base-100">
       {/* Navbar */}
@@ -134,6 +138,15 @@ function App() {
           </div>
         </div>
         <div className="navbar-end gap-2">
+          {import.meta.env.DEV && (
+            <button
+              className="btn btn-ghost btn-sm btn-circle outline-none"
+              onClick={handleRefresh}
+              title={t('refresh')}
+            >
+              <Emoji native="🔄" size={18} />
+            </button>
+          )}
           <button
             className="btn btn-ghost btn-sm btn-circle outline-none"
             onClick={toggleTheme}
@@ -160,8 +173,12 @@ function App() {
 
       {/* Main Content */}
       <main className="flex-1 p-4 overflow-hidden">
-        {activeTab === TAB.NETWORK && <NetworkPage networkRequests={networkRequests} />}
-        {activeTab === TAB.CONSOLE && <ConsolePage consoleLogs={consoleLogs} />}
+        <div className={`h-full ${activeTab === TAB.NETWORK ? '' : 'hidden'}`}>
+          <NetworkPage networkRequests={networkRequests} />
+        </div>
+        <div className={`h-full ${activeTab === TAB.CONSOLE ? '' : 'hidden'}`}>
+          <ConsolePage consoleLogs={consoleLogs} />
+        </div>
       </main>
 
       {/* Dev Status Bar */}

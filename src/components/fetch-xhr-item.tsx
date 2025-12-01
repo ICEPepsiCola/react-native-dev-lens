@@ -73,7 +73,7 @@ export const FetchXHRItem = memo(
                 <span className="font-semibold opacity-70">{t('requestUrl')}:</span>
                 <div className="flex items-center gap-2">
                   <span className="font-mono text-sm break-all">{request.url}</span>
-                  <CopyButton text={request.url} showText={false} size="xs" className="shrink-0" />
+                  <CopyButton text={request.url} size="xs" className="shrink-0" />
                 </div>
                 <span className="font-semibold opacity-70">{t('requestMethod')}:</span>
                 <span className="badge badge-primary">{request.method}</span>
