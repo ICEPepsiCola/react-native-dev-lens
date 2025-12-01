@@ -5,10 +5,11 @@ import { FetchXHRItem } from './fetch-xhr-item'
 import type { NetworkRequest } from '@/types'
 
 interface FetchXHRListProps {
-  requests: NetworkRequest[];
+  requests: NetworkRequest[]
+  standalone?: boolean
 }
 
-export function FetchXHRList({ requests }: FetchXHRListProps) {
+export function FetchXHRList({ requests, standalone = true }: FetchXHRListProps) {
   const { t } = useTranslation()
   const parentRef = useRef<HTMLDivElement>(null)
 
@@ -21,15 +22,15 @@ export function FetchXHRList({ requests }: FetchXHRListProps) {
   })
 
   if (requests.length === 0) {
-    return (
+    return standalone ? (
       <div className="flex items-center justify-center h-full">
         <p className="text-base-content opacity-50">{t('noRequests')}</p>
       </div>
-    )
+    ) : null
   }
 
   return (
-    <div ref={parentRef} className="h-full overflow-auto">
+    <div ref={parentRef} className={standalone ? 'h-full overflow-auto' : ''}>
       <div
         style={{
           height: `${virtualizer.getTotalSize()}px`,

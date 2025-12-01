@@ -48,26 +48,30 @@ export function NetworkPage({ networkRequests }: NetworkPageProps) {
       </div>
 
       {/* Network Requests */}
-      <div className="grow overflow-hidden bg-base-100 rounded-lg border border-base-300">
-        <div className="h-full overflow-y-auto">
-          {filteredRequests.length === 0 ? (
-            <div className="flex items-center justify-center h-full">
-              <p className="text-base-content opacity-50">{t('noRequests')}</p>
-            </div>
-          ) : (
-            <>
-              {/* Show Fetch/XHR when filter is All or Fetch/XHR */}
-              {(filterType === 'All' || filterType === 'Fetch/XHR') && fetchXHRRequests.length > 0 && (
-                <FetchXHRList requests={fetchXHRRequests} />
-              )}
+      <div className="flex-1 overflow-hidden bg-base-100 rounded-lg border border-base-300">
+        {filteredRequests.length === 0 ? (
+          <div className="flex items-center justify-center h-full">
+            <p className="text-base-content opacity-50">{t('noRequests')}</p>
+          </div>
+        ) : filterType === 'All' && fetchXHRRequests.length > 0 && socketRequests.length > 0 ? (
+          // When showing both, merge into one scrollable container
+          <div className="h-full overflow-auto">
+            <FetchXHRList requests={fetchXHRRequests} standalone={false} />
+            <WebSocketList requests={socketRequests} standalone={false} />
+          </div>
+        ) : (
+          <>
+            {/* Show Fetch/XHR when filter is All or Fetch/XHR */}
+            {(filterType === 'All' || filterType === 'Fetch/XHR') && fetchXHRRequests.length > 0 && (
+              <FetchXHRList requests={fetchXHRRequests} standalone={true} />
+            )}
 
-              {/* Show WebSocket when filter is All or Socket */}
-              {(filterType === 'All' || filterType === 'Socket') && socketRequests.length > 0 && (
-                <WebSocketList requests={socketRequests} />
-              )}
-            </>
-          )}
-        </div>
+            {/* Show WebSocket when filter is All or Socket */}
+            {(filterType === 'All' || filterType === 'Socket') && socketRequests.length > 0 && (
+              <WebSocketList requests={socketRequests} standalone={true} />
+            )}
+          </>
+        )}
       </div>
     </div>
   )

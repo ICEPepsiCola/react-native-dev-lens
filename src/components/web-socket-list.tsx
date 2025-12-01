@@ -8,7 +8,8 @@ import { shouldTruncateText, truncateText, getHiddenStats } from '@/utils/text-t
 import type { NetworkRequest, WebSocketMessage } from '@/types'
 
 interface WebSocketListProps {
-  requests: NetworkRequest[];
+  requests: NetworkRequest[]
+  standalone?: boolean
 }
 
 interface WebSocketGroup {
@@ -16,7 +17,7 @@ interface WebSocketGroup {
   allMessages: Array<WebSocketMessage & { connectionId: string }>;
 }
 
-export function WebSocketList({ requests }: WebSocketListProps) {
+export function WebSocketList({ requests, standalone = true }: WebSocketListProps) {
   const { t } = useTranslation()
   const [expandedUrl, setExpandedUrl] = useState<string | null>(null)
   const [expandedMessageIds, setExpandedMessageIds] = useState<Set<string>>(new Set())
@@ -82,15 +83,15 @@ export function WebSocketList({ requests }: WebSocketListProps) {
   }
 
   if (groupedSockets.length === 0) {
-    return (
+    return standalone ? (
       <div className="flex items-center justify-center h-full">
         <p className="text-base-content opacity-50">{t('noRequests')}</p>
       </div>
-    )
+    ) : null
   }
 
   return (
-    <div ref={parentRef} className="h-full overflow-auto">
+    <div ref={parentRef} className={standalone ? 'h-full overflow-auto' : ''}>
       <div
         style={{
           height: `${virtualizer.getTotalSize()}px`,

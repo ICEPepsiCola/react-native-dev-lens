@@ -133,6 +133,64 @@ export default function App() {
     }
   };
 
+  const testVirtualScroll = async () => {
+    addLog('Testing virtual scroll: 10 Fetch + 3 WebSocket...');
+    
+    // Generate 10 fetch requests
+    const fetchPromises = [];
+    for (let i = 1; i <= 10; i++) {
+      const promise = fetch(`https://jsonplaceholder.typicode.com/posts/${i}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Request-ID': `req_${i}_${Date.now()}`,
+          'X-Test-Header': `Test value for request ${i}`,
+        },
+      }).catch(() => {});
+      fetchPromises.push(promise);
+    }
+    
+    await Promise.all(fetchPromises);
+    addLog('10 Fetch requests completed');
+    
+    // Generate 3 WebSocket connections
+    for (let i = 1; i <= 3; i++) {
+      const ws = new WebSocket('wss://echo.websocket.org');
+      ws.onopen = () => {
+        addLog(`WebSocket ${i} Connected`);
+        ws.send(`Hello from WebSocket ${i}!`);
+        
+        // Send multiple messages
+        setTimeout(() => {
+          ws.send(JSON.stringify({
+            type: 'test',
+            socketId: i,
+            message: `Test message from socket ${i}`,
+            timestamp: Date.now(),
+          }));
+        }, 100 * i);
+        
+        setTimeout(() => {
+          ws.send(`Another message from socket ${i}`);
+        }, 200 * i);
+      };
+      ws.onmessage = (e) => {
+        addLog(`WS ${i} Message: ${e.data}`);
+      };
+      ws.onclose = () => {
+        addLog(`WebSocket ${i} Closed`);
+      };
+      
+      // Close after 2 seconds
+      setTimeout(() => {
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.close();
+        }
+      }, 2000);
+    }
+    
+    addLog('3 WebSocket connections initiated');
+  };
+
   const testStress = async () => {
     addLog('Starting stress test: 1000 requests + 1000 console logs...');
     
@@ -289,6 +347,9 @@ export default function App() {
         <TouchableOpacity style={[styles.button, styles.buttonSecondary]} onPress={testConsole}>
           <Text style={styles.buttonText}>Test Console</Text>
         </TouchableOpacity>
+        <TouchableOpacity style={[styles.button, styles.buttonSuccess]} onPress={testVirtualScroll}>
+          <Text style={styles.buttonText}>� Virtsual Scroll (10 Fetch + 3 WS)</Text>
+        </TouchableOpacity>
         <TouchableOpacity style={[styles.button, styles.buttonDanger]} onPress={testStress}>
           <Text style={styles.buttonText}>🔥 Stress Test (1000 each)</Text>
         </TouchableOpacity>
@@ -337,6 +398,9 @@ const styles = StyleSheet.create({
   },
   buttonSecondary: {
     backgroundColor: '#5856D6',
+  },
+  buttonSuccess: {
+    backgroundColor: '#34C759',
   },
   buttonDanger: {
     backgroundColor: '#FF3B30',
