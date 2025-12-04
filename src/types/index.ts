@@ -34,7 +34,7 @@ export interface ConsoleLog {
 
 export type DetailTab = 'General' | 'Headers' | 'Params' | 'Request' | 'Response' | 'Cookies'
 export type FilterType = 'All' | RequestType
-export type LogLevelFilter = 'all' | 'info' | 'warn' | 'error'
+export type LogLevelFilter = 'all' | 'log' | 'info' | 'warn' | 'error'
 
 
 export interface WebSocketUpdate {

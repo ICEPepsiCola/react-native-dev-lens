@@ -13,9 +13,16 @@ interface ConsolePageProps {
 
 const ConsoleLogRow = memo(({ log, theme }: { log: ConsoleLog; theme: 'dark' | 'light' }) => {
   const copyText = useMemo(() => {
-    return log.args.map(arg =>
-      typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg),
-    ).join(' ')
+    return log.args.map(arg => {
+      if (typeof arg === 'object' && arg !== null) {
+        try {
+          return JSON.stringify(arg, null, 2)
+        } catch (_e) {
+          return '[Circular or Non-serializable Object]'
+        }
+      }
+      return String(arg)
+    }).join(' ')
   }, [log.args])
 
   return (
@@ -57,9 +64,17 @@ export function ConsolePage({ consoleLogs }: ConsolePageProps) {
       .map((log, index) => ({ log, index }))
       .filter(({ log }) => {
         const levelMatch = logLevelFilter === 'all' || log.level === logLevelFilter
-        const argsText = log.args.map(arg =>
-          typeof arg === 'object' ? JSON.stringify(arg) : String(arg),
-        ).join(' ')
+
+        const argsText = log.args.map(arg => {
+          if (typeof arg === 'object' && arg !== null) {
+            try {
+              return JSON.stringify(arg)
+            } catch (_e) {
+              return '[Object]'
+            }
+          }
+          return String(arg)
+        }).join(' ')
         const messageMatch = argsText.toLowerCase().includes(logMessageFilter.toLowerCase())
         return levelMatch && messageMatch
       })
@@ -84,7 +99,7 @@ export function ConsolePage({ consoleLogs }: ConsolePageProps) {
           onChange={e => setLogMessageFilter(e.target.value)}
         />
         <div className="join">
-          {(['all', 'info', 'warn', 'error'] as const).map(level => (
+          {(['all', 'log', 'info', 'warn', 'error'] as const).map(level => (
             <button
               key={level}
               className={`btn btn-sm join-item outline-none ${logLevelFilter === level ? 'btn-primary' : 'btn-ghost'}`}
