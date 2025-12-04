@@ -1,6 +1,6 @@
 {
   "name": "react-native-dev-lens",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "description": "Network and Console monitoring tool for React Native - Desktop App & SDK",
   "type": "module",
   "main": "sdk/index.ts",
