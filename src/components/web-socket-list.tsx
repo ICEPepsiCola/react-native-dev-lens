@@ -82,6 +82,86 @@ export function WebSocketList({ requests, standalone = true }: WebSocketListProp
     return dayjs(timestamp).format('HH:mm:ss.SSS')
   }
 
+  const renderExpandedContent = (group: WebSocketGroup) => (
+    <div className="bg-base-200 p-4">
+      {/* 连接信息 */}
+      <div className="flex items-center justify-between mb-4 pb-3 border-b border-base-300">
+        <div className="flex items-center gap-2 flex-1 min-w-0">
+          <span className="text-sm opacity-70">{t('url')}:</span>
+          <span className="font-mono text-xs truncate flex-1">{group.url}</span>
+          <CopyButton text={group.url} size="xs" />
+        </div>
+        <span className="text-sm opacity-70 shrink-0 ml-4">
+          {group.allMessages.length} {t('messages')}
+        </span>
+      </div>
+
+      {/* 消息列表 */}
+      {group.allMessages.length === 0 ? (
+        <div className="text-center py-8 text-sm opacity-50">
+          {t('noMessages')}
+        </div>
+      ) : (
+        <div className="space-y-2 max-h-[500px] overflow-y-auto">
+          {group.allMessages.map(msg => {
+            const isExpanded = expandedMessageIds.has(msg.id)
+            const shouldTruncate = shouldTruncateText(msg.data)
+            const displayData = !isExpanded && shouldTruncate
+              ? truncateText(msg.data)
+              : msg.data
+            const hiddenStats = shouldTruncate ? getHiddenStats(msg.data, displayData) : null
+
+            return (
+              <div key={msg.id} className="flex items-start gap-2 bg-base-100 p-2 rounded">
+                {/* 时间戳 */}
+                <span className="text-xs opacity-50 font-mono shrink-0 mt-1 w-24">
+                  {formatTimestamp(msg.timestamp)}
+                </span>
+
+                {/* 方向标识 */}
+                <span
+                  className={`badge badge-xs shrink-0 mt-1 ${
+                    msg.direction === 'send' ? 'badge-info' : 'badge-success'
+                  }`}
+                >
+                  {msg.direction === 'send' ? '↑' : '↓'}
+                </span>
+
+                {/* 消息内容 */}
+                <div className="flex-1 min-w-0">
+                  {shouldTruncate && (
+                    <button
+                      className="btn btn-ghost btn-xs outline-none flex items-center gap-1 mb-1"
+                      onClick={() => toggleMessageExpand(msg.id)}
+                    >
+                      {isExpanded ? (
+                        <>
+                          <Emoji native="▲" size={12} /> {t('showLess')}
+                        </>
+                      ) : (
+                        <>
+                          <Emoji native="▼" size={12} /> {t('showMore')}
+                          {hiddenStats && hiddenStats.lines > 0 && ` (${hiddenStats.lines} ${t('moreLines')})`}
+                          {hiddenStats && hiddenStats.chars > 0 && hiddenStats.lines === 0 && ` (${hiddenStats.chars} chars)`}
+                        </>
+                      )}
+                    </button>
+                  )}
+                  <pre className="text-xs font-mono whitespace-pre-wrap break-all m-0 bg-base-200 dark:bg-base-300 p-2 rounded">
+                    {displayData}
+                  </pre>
+                </div>
+
+                {/* 复制按钮 */}
+                <CopyButton text={msg.data} size="xs" className="shrink-0 mt-1" />
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+
   if (groupedSockets.length === 0) {
     return standalone ? (
       <div className="flex items-center justify-center h-full">
@@ -90,8 +170,42 @@ export function WebSocketList({ requests, standalone = true }: WebSocketListProp
     ) : null
   }
 
+  // Non-standalone mode: render all items without virtualization
+  if (!standalone) {
+    return (
+      <div>
+        {groupedSockets.map(group => {
+          const isExpanded = expandedUrl === group.url
+
+          return (
+            <div key={group.url} className="border-b border-base-300 bg-base-100">
+              {/* 手风琴头部 */}
+              <div
+                onClick={() => toggleExpand(group.url)}
+                className="flex items-center gap-3 p-4 hover-bg cursor-pointer transition-colors"
+              >
+                <Emoji native={isExpanded ? '▼' : '▶'} size={12} class="shrink-0" />
+                <span className="badge badge-primary shrink-0 w-[80px] justify-center">WS</span>
+                <span className="font-mono text-sm flex-1 truncate" title={group.url}>
+                  {group.url}
+                </span>
+                <span className="badge badge-outline badge-sm shrink-0 w-[80px] justify-center">
+                  {group.allMessages.length}
+                </span>
+              </div>
+
+              {/* 手风琴内容 */}
+              {isExpanded && renderExpandedContent(group)}
+            </div>
+          )
+        })}
+      </div>
+    )
+  }
+
+  // Standalone mode: use virtualization
   return (
-    <div ref={parentRef} className={standalone ? 'h-full overflow-auto' : ''}>
+    <div ref={parentRef} className="h-full overflow-auto">
       <div
         style={{
           height: `${virtualizer.getTotalSize()}px`,
@@ -133,85 +247,7 @@ export function WebSocketList({ requests, standalone = true }: WebSocketListProp
                 </div>
 
                 {/* 手风琴内容 */}
-                {isExpanded && (
-                  <div className="bg-base-200 p-4">
-                    {/* 连接信息 */}
-                    <div className="flex items-center justify-between mb-4 pb-3 border-b border-base-300">
-                      <div className="flex items-center gap-2 flex-1 min-w-0">
-                        <span className="text-sm opacity-70">{t('url')}:</span>
-                        <span className="font-mono text-xs truncate flex-1">{group.url}</span>
-                        <CopyButton text={group.url} size="xs" />
-                      </div>
-                      <span className="text-sm opacity-70 shrink-0 ml-4">
-                        {group.allMessages.length} {t('messages')}
-                      </span>
-                    </div>
-
-                    {/* 消息列表 */}
-                    {group.allMessages.length === 0 ? (
-                      <div className="text-center py-8 text-sm opacity-50">
-                        {t('noMessages')}
-                      </div>
-                    ) : (
-                      <div className="space-y-2 max-h-[500px] overflow-y-auto">
-                        {group.allMessages.map(msg => {
-                          const isExpanded = expandedMessageIds.has(msg.id)
-                          const shouldTruncate = shouldTruncateText(msg.data)
-                          const displayData = !isExpanded && shouldTruncate
-                            ? truncateText(msg.data)
-                            : msg.data
-                          const hiddenStats = shouldTruncate ? getHiddenStats(msg.data, displayData) : null
-
-                          return (
-                            <div key={msg.id} className="flex items-start gap-2 bg-base-100 p-2 rounded">
-                              {/* 时间戳 */}
-                              <span className="text-xs opacity-50 font-mono shrink-0 mt-1 w-24">
-                                {formatTimestamp(msg.timestamp)}
-                              </span>
-
-                              {/* 方向标识 */}
-                              <span
-                                className={`badge badge-xs shrink-0 mt-1 ${
-                                  msg.direction === 'send' ? 'badge-info' : 'badge-success'
-                                }`}
-                              >
-                                {msg.direction === 'send' ? '↑' : '↓'}
-                              </span>
-
-                              {/* 消息内容 */}
-                              <div className="flex-1 min-w-0">
-                                {shouldTruncate && (
-                                  <button
-                                    className="btn btn-ghost btn-xs outline-none flex items-center gap-1 mb-1"
-                                    onClick={() => toggleMessageExpand(msg.id)}
-                                  >
-                                    {isExpanded ? (
-                                      <>
-                                        <Emoji native="▲" size={12} /> {t('showLess')}
-                                      </>
-                                    ) : (
-                                      <>
-                                        <Emoji native="▼" size={12} /> {t('showMore')}
-                                        {hiddenStats && hiddenStats.lines > 0 && ` (${hiddenStats.lines} ${t('moreLines')})`}
-                                        {hiddenStats && hiddenStats.chars > 0 && hiddenStats.lines === 0 && ` (${hiddenStats.chars} chars)`}
-                                      </>
-                                    )}
-                                  </button>
-                                )}
-                                <pre className="text-xs font-mono whitespace-pre-wrap break-all m-0 bg-base-200 dark:bg-base-300 p-2 rounded">
-                                  {displayData}
-                                </pre>
-                              </div>
-
-                              {/* 复制按钮 */}
-                              <CopyButton text={msg.data} size="xs" className="shrink-0 mt-1" />
-                            </div>
-                          )
-                        })}
-                      </div>
-                    )}
-                  </div>
-                )}
+                {isExpanded && renderExpandedContent(group)}
               </div>
             </div>
           )

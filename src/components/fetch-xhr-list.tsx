@@ -19,6 +19,7 @@ export function FetchXHRList({ requests, standalone = true }: FetchXHRListProps)
     estimateSize: () => 60,
     overscan: 10,
     measureElement: element => element.getBoundingClientRect().height,
+    enabled: standalone,
   })
 
   if (requests.length === 0) {
@@ -29,8 +30,20 @@ export function FetchXHRList({ requests, standalone = true }: FetchXHRListProps)
     ) : null
   }
 
+  // Non-standalone mode: render all items without virtualization
+  if (!standalone) {
+    return (
+      <div>
+        {requests.map(req => (
+          <FetchXHRItem key={req.id} request={req} />
+        ))}
+      </div>
+    )
+  }
+
+  // Standalone mode: use virtualization
   return (
-    <div ref={parentRef} className={standalone ? 'h-full overflow-auto' : ''}>
+    <div ref={parentRef} className="h-full overflow-auto">
       <div
         style={{
           height: `${virtualizer.getTotalSize()}px`,
